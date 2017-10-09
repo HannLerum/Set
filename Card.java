@@ -32,7 +32,7 @@ public class Card {
   
   public boolean isSelected()
   {
-    return selected
+    return selected;
   }
   
 }
