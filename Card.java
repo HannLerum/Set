@@ -2,37 +2,61 @@
 public class Card {
   
   int cardsInASet;
-  int numberOfVariables;
   int[] variables;
   boolean selected;
+  boolean initialized;
   
   public Card()
   {
-    cardsInASet = 3;
-    numberOfVariables = 4;
-    variables = new int[numberOfVariables];
-    for(int i =0; i<numberOfVariables; i++)
-    {
-      variables[i]=0;
-    }
-    selected = false;
+	  initialized = false;
+	  cardsInASet = 3;
+	  int numberOfVariables = 4;
+	  variables = new int[numberOfVariables];
+	  for(int i =0; i<numberOfVariables; i++)
+	  {
+		  variables[i]=0;
+	  }
+	  selected = false;
+	  initialized = true;
   }
   
   public Card(int numberOfVariables,int numberOfCardstoaSet,int[] variables)
   {
-    cardsInASet = numberOfCardstoaSet;
-    numberOfVariables = numberOfVariables;
-    this.variables = new int[numberOfVariables];
-    for(int i =0; i<numberOfVariables; i++)
-    {
-      this.variables[i]=variables[i];
-    }
-    selected = false;
+	  initialized = false;
+	  cardsInASet = numberOfCardstoaSet;
+	  this.variables = new int[numberOfVariables];
+	  for(int i =0; i<numberOfVariables; i++)
+	  {
+		  if(variables[i]<cardsInASet)
+		  {
+			  this.variables[i]=variables[i];
+		  }
+		  else
+			  throw new IllegalArgumentException("variable is out of bounds");
+	  }
+	  selected = false;
+	  initialized = true;
   }
   
   public boolean isSelected()
   {
-    return selected;
+	  if(initialized)
+	  {
+		  return selected;
+	  }
+	  else
+		  throw new IllegalArgumentException("card is not initialized");
+  }
+  
+  public int getVariable(int i)
+  {
+	  if(initialized)
+	  {
+		  return variables[i];
+	  }
+	  else
+		  throw new IllegalArgumentException("card is not initialized");
+	  
   }
   
 }
