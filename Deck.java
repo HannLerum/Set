@@ -1,6 +1,6 @@
-// Infamous Gunfighter Wyatt Earp once said "Words fly quick but bullets fly quicker"
+// Infamous Gunfighter Wyatt Earp once said "Coding is like walking on coals, when you do it right everyone is impressed but the learning process sucks"
 
 public class Deck {
 
-	//This is a trivial change to test conflict resolution
+	
 }
