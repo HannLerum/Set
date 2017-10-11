@@ -91,7 +91,7 @@ public class Card {
   public void draw(Graphics g, int x, int y, int width, int height)
   {
 	  g.setColor(COLOR_BLACK);
-	  g.drawRoundRect(x, width, y, height, 10, 10);//draw border of card
+	  g.drawRoundRect(x, y, width, height, 10, 10);//draw border of card
 	  
 	  int h = (height-20)/variables[NUMBER]-5;
 	  int w = width-20;
