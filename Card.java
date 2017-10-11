@@ -1,8 +1,15 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import javax.swing.JFrame; // for JFrame
+import javax.swing.JLabel;
+import javax.swing.JPanel; // for JPanel
+import javax.swing.border.EmptyBorder;
 
 
 public class Card {
+	
+	protected JFrame cardJFrame;
+    protected JPanel cardJPanel;
   
   int cardsInASet;
   int[] variables;
@@ -37,9 +44,16 @@ public class Card {
 	public static final Color COLOR_WHITE = new Color(255,255,255);
 	public static final Color[] COLOR_ARRAY = {COLOR_RED, COLOR_BLUE, COLOR_YELLOW};
   
-  public Card()
+  public Card(JFrame passedInJFrame)
   {
 	  initialized = false;
+	  
+	  cardJFrame = passedInJFrame;
+	  cardJPanel = new JPanel();
+
+	  cardJPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+	  cardJPanel.setLayout(null);
+		
 	  cardsInASet = 3;
 	  int numberOfVariables = 4;
 	  variables = new int[numberOfVariables];
@@ -51,9 +65,31 @@ public class Card {
 	  initialized = true;
   }
   
-  public Card(int numberOfVariables,int numberOfCardstoaSet,int[] variables)
+  public Card()
   {
 	  initialized = false;
+		
+	  cardsInASet = 3;
+	  int numberOfVariables = 4;
+	  variables = new int[numberOfVariables];
+	  for(int i =0; i<numberOfVariables; i++)
+	  {
+		  variables[i]=1;
+	  }
+	  selected = false;
+	  initialized = true;
+  }
+  
+  public Card(JFrame passedInJFrame, int numberOfVariables,int numberOfCardstoaSet,int[] variables)
+  {
+	  initialized = false;
+	  
+	  cardJFrame = passedInJFrame;
+	  cardJPanel = new JPanel();
+
+	  cardJPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+	  cardJPanel.setLayout(null);
+	  
 	  cardsInASet = numberOfCardstoaSet;
 	  this.variables = new int[numberOfVariables];
 	  for(int i =0; i<numberOfVariables; i++)
@@ -88,8 +124,14 @@ public class Card {
 	  
   }
   
-  public void draw(Graphics g, int x, int y, int width, int height)
+  public void draw( int x, int y, int width, int height)
   {
+	  if(!initialized)
+	  	{throw new IllegalArgumentException("card is not initialized");}
+	  
+	  
+	  Graphics g = cardJPanel.getGraphics();
+	  Color currentColor = g.getColor();
 	  g.setColor(COLOR_BLACK);
 	  g.drawRoundRect(x, y, width, height, 10, 10);//draw border of card
 	  
@@ -102,6 +144,32 @@ public class Card {
 		  
 	  }
 	  
+	  
+	  
+	  g.setColor(currentColor);
+  }
+  
+  public void draw(Graphics g, int x, int y, int width, int height)
+  {
+	  if(!initialized)
+	  	{throw new IllegalArgumentException("card is not initialized");}
+	  
+	  Color currentColor = g.getColor();
+	  g.setColor(COLOR_BLACK);
+	  g.drawRoundRect(x, y, width, height, 10, 10);//draw border of card
+	  
+	  int h = (height-20)/variables[NUMBER]-5;
+	  int w = width-20;
+	  
+	  g.setColor(COLOR_ARRAY[variables[COLOR]]);
+	  for(int i =0; i<variables[NUMBER];i++)
+	  {
+		  
+	  }
+	  
+	  
+	  
+	  g.setColor(currentColor);
   }
   
   
