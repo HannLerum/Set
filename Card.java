@@ -59,4 +59,21 @@ public class Card {
 	  
   }
   
+  public void draw(int xcoordinate, int ycoordinate)
+  {
+	  //TODO
+  }
+  
+  public void selectOrDeselect()
+  {
+	  if(selected)
+		  {selected = false;}
+	  else
+		  {selected = true;}
+  }
+  
+  
+  
+  
+  
 }
