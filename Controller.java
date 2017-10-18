@@ -42,6 +42,15 @@ public class Controller extends JFrame   implements MouseListener{
         int borderWidth = (width - gameContentPane.getWidth())/2;  // 2 since border on either side
         xMouseOffsetToContentPaneFromJFrame = borderWidth;
         yMouseOffsetToContentPaneFromJFrame = height - gameContentPane.getHeight()-borderWidth; // assume side border = bottom border; ignore title bar
+
+		int[] variables0 = {1,0,0,1};
+        Card trial = new Card(4,3,variables0);
+        
+        int[] variables1 = {2,1,0,1};
+        Card trial2 = new Card(4,3,variables1);
+        
+        int[] variables2 = {3,2,0,1};
+        Card trial3 = new Card(4,3,variables2);
         
         repaint();
 	}
@@ -50,17 +59,10 @@ public class Controller extends JFrame   implements MouseListener{
 	{
 		super.paint(g);
 		
-		int[] variables0 = {1,0,0,1};
-        Card trial = new Card(4,3,variables0);
-        trial.draw(g,100, 100, 200, 400);
-        
-        int[] variables1 = {2,1,0,1};
-        Card trial2 = new Card(4,3,variables1);
-        trial2.draw(g, 350, 100, 200, 400);
-        
-        int[] variables2 = {3,2,0,1};
-        Card trial3 = new Card(4,3,variables2);
-        trial3.draw(g, 600, 100, 200, 400);
+		for(int i =0; i<cardsOnTable.length;i++)
+		{
+			
+		}
 	}
 	
 	private int howManySets()

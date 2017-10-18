@@ -25,7 +25,7 @@ public class Card {
   final int FILL = 3;
   
   //color
-  final int RED = 0;
+  final int GREEN = 0;
   final int BLUE = 1;
   final int YELLOW = 2;
   //shape
@@ -40,11 +40,12 @@ public class Card {
   
 	public static final Color COLOR_RED = new Color(255,0,0);
 	public static final Color COLOR_BLUE = new Color(0,0,255);
-	public static final Color COLOR_YELLOW = new Color(255,255,0);
+	public static final Color COLOR_YELLOW = new Color(204,204,0);
 	public static final Color COLOR_BLACK = new Color(0,0,0);
 	public static final Color COLOR_GREEN = new Color(0,255,0);
 	public static final Color COLOR_WHITE = new Color(255,255,255);
-	public static final Color[] COLOR_ARRAY = {COLOR_RED, COLOR_BLUE, COLOR_YELLOW};
+	
+	public static final Color[] COLOR_ARRAY = {COLOR_GREEN, COLOR_BLUE, COLOR_YELLOW};
   
   public Card()
   {
@@ -119,12 +120,15 @@ public class Card {
 	  
 	  Color currentColor = g.getColor();
 	  
-	  g.setColor(COLOR_WHITE);
+	  g.setColor(Color.white);
 	  g.fillRoundRect(x, y, width, height, 10, 10);//fill card
-	  g.setColor(COLOR_BLACK);
+	  if(!selected)
+		  {g.setColor(Color.black);}
+	  else
+	  	{g.setColor(Color.red);}
 	  g.drawRoundRect(x, y, width, height, 10, 10);//draw border of card
 	  
-	  int numberOfStripes = 10;
+	  int numberOfStripes = 20;
 	  int yBuffer = 10;
 	  int xBuffer = 10;
 	  
@@ -186,8 +190,6 @@ public class Card {
 		  }
 		  
 	  }
-	  
-	  
 	  
 	  g.setColor(currentColor);
   }
