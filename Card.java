@@ -140,9 +140,9 @@ public class Card {
 		  {
 			  if(variables[FILL]==STRIPED)
 			  {
-				  int xDistance = w/numberOfStripes;
-				  int yDistance = h/numberOfStripes;
-				  for(int j = 1; j<=numberOfStripes; j++)
+				  int xDistance = w/(numberOfStripes/2);
+				  int yDistance = h/(numberOfStripes/2);
+				  for(int j = 1; j<=numberOfStripes/2; j++)
 				  {
 					  g.drawLine(x+xBuffer+j*xDistance , y+yBuffer+(yBuffer/2+h)*i , x+xBuffer , y+yBuffer+(yBuffer/2+h)*i+j*yDistance);
 					  g.drawLine(x+xBuffer+j*xDistance , y+yBuffer+(yBuffer/2+h)*i+h , x+xBuffer+w , y+yBuffer+(yBuffer/2+h)*i+j*yDistance);
