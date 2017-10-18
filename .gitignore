@@ -4,3 +4,7 @@ Controller.class
 Deck.class
 .classpath
 .project
+
+testController.class
+
+testController$1.class
