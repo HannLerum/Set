@@ -256,4 +256,80 @@ public class Card {
 		  {selected = true;}
   }
   
+  public String toString()
+  {
+	  if(!initialized)
+	  {throw new IllegalArgumentException("card is not initialized");}
+	  
+	  String s = "";
+	  String color = "";
+	  String shape = "";
+	  String fill = "";
+	  
+	  if(variables[COLOR]==GREEN)
+	  {
+		  color = "green";
+	  }
+	  if(variables[COLOR]==BLUE)
+	  {
+		  color = "blue";
+	  }
+	  if(variables[COLOR]==YELLOW)
+	  {
+		  color = "yellow";
+	  }
+	  
+	  if(variables.length>NUMBER)
+	  {
+		int number = variables[NUMBER];
+		if(variables.length>SHAPE)
+		{
+			if(variables[SHAPE]==SQUARE)
+			{
+				shape = "square";
+			}
+			if(variables[SHAPE]==CIRCLE)
+			{
+				shape = "circle";
+			}
+			if(variables[SHAPE]==TRIANGLE)
+			{
+				shape = "triangle";
+			}
+			
+			if(variables.length>FILL)
+			{
+				if(variables[FILL]==OUTLINE)
+				{
+					fill = "outline";
+				}
+				if(variables[FILL]==STRIPED)
+				{
+					fill = "striped";
+				}
+				if(variables[FILL]==SOLID)
+				{
+					fill = "solid";
+				}
+				
+				s = (number + " "+color+" "+fill+" "+shape);
+			}
+			else//color, number, and shape, but no fill
+			{
+				s = (number + " "+color+" "+shape);
+			}
+		}
+		else //color and number, but no shape (there is currently no reason for this though...)
+		{
+			;
+		}
+	  }
+	  else // no variables but the color
+	  {
+		  s = (color);
+	  }
+	  
+	  return s;
+  }
+  
 }

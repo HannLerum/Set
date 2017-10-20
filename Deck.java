@@ -68,6 +68,11 @@ public class Deck {
 		}
 	}
 	
+	public boolean cardsRemaining()
+	{
+		return(currentCard < deck.length);
+	}
+	
 	public int numberOfCards()
 	{
 		return NUMBER_OF_CARDS;
