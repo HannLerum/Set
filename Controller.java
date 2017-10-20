@@ -10,8 +10,8 @@ import javax.swing.JFrame;
 
 public class Controller extends JFrame   implements MouseListener{
 	
-	private boolean debugging;
-	
+	private boolean debugging = true;
+	private boolean gameInitialized = false;
 	
     private Container gameContentPane;
     private boolean gameIsReady = false;
@@ -52,7 +52,7 @@ public class Controller extends JFrame   implements MouseListener{
 	Controller()
 	{
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		int width = (int)screenSize.getWidth();
+		int width = (int)screenSize.getWidth()/2;
 		int height = (int)screenSize.getHeight();
 		
         this.setSize(width, height);
@@ -68,6 +68,9 @@ public class Controller extends JFrame   implements MouseListener{
         xMouseOffsetToContentPaneFromJFrame = borderWidth;
         yMouseOffsetToContentPaneFromJFrame = height - gameContentPane.getHeight()-borderWidth; // assume side border = bottom border; ignore title bar
 
+     // register this class as a mouse event listener for the JFrame
+        this.addMouseListener(this);
+        
         initialize();
         
         repaint();
@@ -104,34 +107,34 @@ public class Controller extends JFrame   implements MouseListener{
         		{numberOfCardsOnTheTable++;}
         }
         
-        if(debugging)
-        	{System.out.println("There are "+numberOfCardsOnTheTable+" cards on the table.");}
+        gameInitialized = true;
 	}
 	
 	public void paint(Graphics g)
 	{
 		super.paint(g);
-		
-        for (int i = 0; i<cardsOnTable.length; i++)
-        {
-        	if(cardsOnTable[i]!=null)
-        	{
-        		int x;
-        		int y;
-        		if(dealingStyle == HORIZONTALLY)
-        		{
-	        		x = firstCardX+(cardWidth+cardBufferX)*(i%columns);
-	    			y = firstCardY+(cardHeight+cardBufferY)*(i/columns);
-        		}
-        		else //if(dealingStyle == VERTICALLY)
-    			{
-    				x = firstCardX+(cardWidth+cardBufferX)*(i/rows);
-    				y = firstCardY+(cardHeight+cardBufferY)*(i%rows);
-    			}
-        		cardsOnTable[i].draw(g, x, y, cardWidth, cardHeight);
-        	}
-        }
-		
+		if(gameInitialized)
+		{
+	        for (int i = 0; i<cardsOnTable.length; i++)
+	        {
+	        	if(cardsOnTable[i]!=null)
+	        	{
+	        		int x;
+	        		int y;
+	        		if(dealingStyle == HORIZONTALLY)
+	        		{
+		        		x = firstCardX+(cardWidth+cardBufferX)*(i%columns);
+		    			y = firstCardY+(cardHeight+cardBufferY)*(i/columns);
+	        		}
+	        		else //if(dealingStyle == VERTICALLY)
+	    			{
+	    				x = firstCardX+(cardWidth+cardBufferX)*(i/rows);
+	    				y = firstCardY+(cardHeight+cardBufferY)*(i%rows);
+	    			}
+	        		cardsOnTable[i].draw(g, x, y, cardWidth, cardHeight);
+	        	}
+	        }
+		}
 	}
 	
 	private int howManySets()
@@ -150,83 +153,103 @@ public class Controller extends JFrame   implements MouseListener{
 		//TODO
 	}
 	
-	public void mouseClicked(MouseEvent event) {
-		int xMousePosition = event.getX()-xMouseOffsetToContentPaneFromJFrame;
-		int yMousePosition = event.getY()-yMouseOffsetToContentPaneFromJFrame;
-		
-		if(debugging)
-			{System.out.println("clicked at position ("+xMousePosition+","+yMousePosition+").");}
-		
-		//determine which card, if any, the user clicked on, and select or deselect it as [relevent]
-		for(int i = 0; i<cardsOnTable.length; i++)
+	public void mousePressed(MouseEvent event) {
+		if(gameInitialized)
 		{
-			int xPosition = firstCardX+(cardWidth+cardBufferX)*(i%columns);
-			int yPosition = firstCardY+(cardHeight+cardBufferY)*(i/columns);
-			if ((xPosition <= xMousePosition && xMousePosition <= xPosition + cardWidth) 
-					&& (yPosition <= yMousePosition && yMousePosition <= yPosition + cardHeight))
+			int xMousePosition = event.getX()-xMouseOffsetToContentPaneFromJFrame;
+			int yMousePosition = event.getY()-yMouseOffsetToContentPaneFromJFrame;
+			
+			if(debugging)
+				{System.out.println("clicked at position ("+xMousePosition+","+yMousePosition+").");}
+			
+			//determine which card, if any, the user clicked on, and select or deselect it as [relevent]
+			for(int i = 0; i<cardsOnTable.length; i++)
 			{
-				if(cardsOnTable[i].isSelected()) // card is currently selected, and this click will deselect it
-				{
-					// remove from selectedCards
-				}
-				else //card is currently deselected, and this click will select it
-				{
-					// add to selectedCards
-				}
-				cardsOnTable[i].switchSelectedOrDeselected();
+				int xPosition;
+				int yPosition;
+				if(dealingStyle == HORIZONTALLY)
+        		{
+	        		xPosition = firstCardX+(cardWidth+cardBufferX)*(i%columns);
+	    			yPosition = firstCardY+(cardHeight+cardBufferY)*(i/columns);
+        		}
+        		else //if(dealingStyle == VERTICALLY)
+    			{
+    				xPosition = firstCardX+(cardWidth+cardBufferX)*(i/rows);
+    				yPosition = firstCardY+(cardHeight+cardBufferY)*(i%rows);
+    			}
 				
-				if(debugging)
-					{System.out.println("clicked on card # "+i+" (row "+i/columns+", column "+i%columns+")");}
-			}
-		}
-		
-		//if the number of cards selected is the number of cards needed for a set.
-		{
-			//if it is a set
-			{
-				//give points
-				//remove selected cards from table
-				
-				boolean dealing = true;
-				//while(dealing)
+				if ((xPosition <= xMousePosition && xMousePosition <= xPosition + cardWidth) 
+						&& (yPosition <= yMousePosition && yMousePosition <= yPosition + cardHeight))
 				{
-					if (howManySets() == 0) // there are no sets on the table
+					if(cardsOnTable[i].isSelected()) // card is currently selected, and this click will deselect it
 					{
-						//if there are cards in the deck
-						{
-							//dealCardsToTable(numberOfCardsInASet)
-						}
-						//else //there are no cards left in the deck
-						{
-							//game over
-							dealing = false;
-						}
+						// remove from selectedCards
+						cardsOnTable[i].deselect();
 					}
-					else // there is at least one set on the table
+					else //card is currently deselected, and this click will select it
 					{
-						//if there are less cards on the table than we want there to be cards on the table
+						// add to selectedCards
+						cardsOnTable[i].select();
+					}
+					
+					repaint();
+					
+					if(debugging)
+					{
+						System.out.println("clicked on card #"+i+" (row "+( ( dealingStyle == HORIZONTALLY?(i/columns):(i%rows) ) +1)
+								+", column "+(( dealingStyle == HORIZONTALLY?(i%columns):(i/rows) )+1)+"), "+(cardsOnTable[i].isSelected()?"selecting":"deselecting")+" it.");
+					}
+				}
+			}
+			
+			//if the number of cards selected is the number of cards needed for a set.
+			{
+				//if it is a set
+				{
+					//give points
+					//remove selected cards from table
+					
+					boolean dealing = true;
+					//while(dealing)
+					{
+						if (howManySets() == 0) // there are no sets on the table
 						{
 							//if there are cards in the deck
 							{
 								//dealCardsToTable(numberOfCardsInASet)
 							}
-							//else //no cards left in the deck
+							//else //there are no cards left in the deck
 							{
+								//game over
 								dealing = false;
 							}
 						}
-						//else //there are enough cards on the table
+						else // there is at least one set on the table
 						{
-							dealing = false;
-						}
-					}//end else
-				}//end while
-			}//end if
-			//else //it is not a set
-			{
-				//scold, maybe deduct points
+							//if there are less cards on the table than we want there to be cards on the table
+							{
+								//if there are cards in the deck
+								{
+									//dealCardsToTable(numberOfCardsInASet)
+								}
+								//else //no cards left in the deck
+								{
+									dealing = false;
+								}
+							}
+							//else //there are enough cards on the table
+							{
+								dealing = false;
+							}
+						}//end else
+					}//end while
+				}//end if
+				//else //it is not a set
+				{
+					//scold, maybe deduct points
+				}
+				//empty selectedCards
 			}
-			//empty selectedCards
 		}
 	}
 	
@@ -238,7 +261,7 @@ public class Controller extends JFrame   implements MouseListener{
 		;
 	}
 
-	public void mousePressed(MouseEvent arg0) {
+	public void mouseClicked(MouseEvent arg0) {
 		;
 	}
 
