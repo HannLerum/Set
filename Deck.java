@@ -31,7 +31,7 @@ public class Deck {
 			{
 				variables[j]= (i/(int)Math.pow(cardsInASet,j))%cardsInASet;
 				//if the variable is the number of tokens on the card
-				if(j==0)
+				if(j==Card.NUMBER)
 				{
 					variables[j]++;
 				}

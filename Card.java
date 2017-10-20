@@ -19,33 +19,33 @@ public class Card {
   boolean initialized;
   
   //define variables
-  final int NUMBER = 0;
-  final int COLOR = 1;
-  final int SHAPE = 2;
-  final int FILL = 3;
+  public static final int COLOR = 0;
+  public static final int NUMBER = 1;
+  public static final int SHAPE = 2;
+  public static final int FILL = 3;
   
   //color
-  final int GREEN = 0;
-  final int BLUE = 1;
-  final int YELLOW = 2;
+  public static final int GREEN = 0;
+  public static final int BLUE = 1;
+  public static final int YELLOW = 2;
   //shape
-  final int SQUARE = 0;
-  final int TRIANGLE = 1;
-  final int CIRCLE = 2;
+  public static final int SQUARE = 0;
+  public static final int TRIANGLE = 1;
+  public static final int CIRCLE = 2;
   //fill
-  final int OUTLINE = 0;
-  final int STRIPED = 1;
-  final int SOLID = 2;
+  public static final int OUTLINE = 0;
+  public static final int STRIPED = 1;
+  public static final int SOLID = 2;
   
   
-	public static final Color COLOR_RED = new Color(255,0,0);
-	public static final Color COLOR_BLUE = new Color(0,0,255);
-	public static final Color COLOR_YELLOW = new Color(204,204,0);
-	public static final Color COLOR_BLACK = new Color(0,0,0);
-	public static final Color COLOR_GREEN = new Color(0,255,0);
-	public static final Color COLOR_WHITE = new Color(255,255,255);
+	final Color COLOR_RED = new Color(255,0,0);
+	final Color COLOR_BLUE = new Color(0,0,255);
+	final Color COLOR_YELLOW = new Color(204,204,0);
+	final Color COLOR_BLACK = new Color(0,0,0);
+	final Color COLOR_GREEN = new Color(0,255,0);
+	final Color COLOR_WHITE = new Color(255,255,255);
 	
-	public static final Color[] COLOR_ARRAY = {COLOR_GREEN, COLOR_BLUE, COLOR_YELLOW};
+	final Color[] COLOR_ARRAY = {COLOR_GREEN, COLOR_BLUE, COLOR_YELLOW};
   
   public Card()
   {
@@ -84,9 +84,12 @@ public class Card {
 		  else
 			  {throw new IllegalArgumentException("variable is out of bounds");}
 	  }
-	  if(variables[NUMBER]<1)
+	  if(variables.length>NUMBER)
 	  {
-		  throw new IllegalArgumentException("A card must have at least one symbol on it.");
+		  if(variables[NUMBER]<1)
+		  {
+			  throw new IllegalArgumentException("Number of symbols must be at least 1");
+		  }
 	  }
 	  
 	  selected = false;
@@ -128,67 +131,97 @@ public class Card {
 	  	{g.setColor(Color.red);}
 	  g.drawRoundRect(x, y, width, height, 10, 10);//draw border of card
 	  
-	  int numberOfStripes = 20;
-	  int yBuffer = 10;
-	  int xBuffer = 10;
-	  
-	  int h = (height-(2*yBuffer))/variables[NUMBER]-yBuffer/2;
-	  h -= h%numberOfStripes;
-	  int w = width-2*xBuffer;
-	  w -= w%numberOfStripes;
-	  
 	  g.setColor(COLOR_ARRAY[variables[COLOR]]);
-	  for(int i =0; i<variables[NUMBER];i++)
+	  
+	  if(variables.length>SHAPE)//if the variables includes shape
 	  {
-		  if(variables[SHAPE]==SQUARE)
+		  int numberOfStripes = 20;
+		  int yBuffer = 10;
+		  int xBuffer = 10;
+		  
+		  int h = (height-(2*yBuffer))/variables[NUMBER]-yBuffer/2;
+		  int w = width-2*xBuffer;
+		  
+		  for(int i =0; i<variables[NUMBER];i++)
 		  {
-			  if(variables[FILL]==STRIPED)
+			  if(variables[SHAPE]==SQUARE)
 			  {
-				  int xDistance = w/(numberOfStripes/2);
-				  int yDistance = h/(numberOfStripes/2);
-				  for(int j = 1; j<=numberOfStripes/2; j++)
+				  if(variables.length>FILL)//if the variables includes the fill
 				  {
-					  g.drawLine(x+xBuffer+j*xDistance , y+yBuffer+(yBuffer/2+h)*i , x+xBuffer , y+yBuffer+(yBuffer/2+h)*i+j*yDistance);
-					  g.drawLine(x+xBuffer+j*xDistance , y+yBuffer+(yBuffer/2+h)*i+h , x+xBuffer+w , y+yBuffer+(yBuffer/2+h)*i+j*yDistance);
+					  if(variables[FILL]==STRIPED)
+					  {
+						  int xDistance = w/(numberOfStripes/2);
+						  int yDistance = h/(numberOfStripes/2);
+						  for(int j = 1; j<=numberOfStripes/2; j++)
+						  {
+							  g.drawLine(x+xBuffer+j*xDistance , y+yBuffer+(yBuffer/2+h)*i , x+xBuffer , y+yBuffer+(yBuffer/2+h)*i+j*yDistance);
+							  g.drawLine(x+xBuffer+j*xDistance , y+yBuffer+(yBuffer/2+h)*i+h , x+xBuffer+w , y+yBuffer+(yBuffer/2+h)*i+j*yDistance);
+						  }
+					  }
+					  if(variables[FILL]==SOLID)
+					  {
+						  g.fillRect(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);
+					  }
 				  }
-			  }
-			  if(variables[FILL]==SOLID)
-			  {
-				  g.fillRect(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);
-			  }
-			  g.drawRect(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);
-		  }
-		  
-		  if(variables[SHAPE]==TRIANGLE)
-		  {
-			  int[] xPoints = {x+xBuffer, x+(width-xBuffer), x+(width/2)};
-			  int[] yPoints = {y+yBuffer+(yBuffer/2+h)*i+h , y+yBuffer+(yBuffer/2+h)*i+h , y+yBuffer+(yBuffer/2+h)*i};
+				  else // fill is not a variable
+				  {
+					  g.fillRect(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h); //solid fill
+				  }
+				  g.drawRect(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);//outline
+			  }//end square
 			  
-			  if(variables[FILL]==STRIPED)
+			  if(variables[SHAPE]==TRIANGLE)
 			  {
+				  int[] xPoints = {x+xBuffer, x+(width-xBuffer), x+(width/2)};
+				  int[] yPoints = {y+yBuffer+(yBuffer/2+h)*i+h , y+yBuffer+(yBuffer/2+h)*i+h , y+yBuffer+(yBuffer/2+h)*i};
 				  
-			  }
-			  if(variables[FILL]==SOLID)
-			  {
-				  g.fillPolygon(xPoints, yPoints, 3);
-			  }
-			  g.drawPolygon(xPoints, yPoints, 3);
-		  }
-		  
-		  if(variables[SHAPE]==CIRCLE)
-		  {
-			  if(variables[FILL]==STRIPED)
-			  {
-				  
-			  }
-			  if(variables[FILL]==SOLID)
-			  {
-				  g.fillOval(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);
-			  }
+				  if(variables.length>FILL)//if the variables includes the fill
+				  {
+					  if(variables[FILL]==STRIPED)
+					  {
+						  
+					  }
+					  if(variables[FILL]==SOLID)
+					  {
+						  g.fillPolygon(xPoints, yPoints, 3);
+					  }
+				  }
+				  else //fill is not a variable
+				  {
+					  g.fillPolygon(xPoints, yPoints, 3);//solid fill
+				  }
+				  g.drawPolygon(xPoints, yPoints, 3);//outline
+			  }//end triangle
 			  
-			  g.drawOval(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);
-		  }
-		  
+			  if(variables[SHAPE]==CIRCLE)
+			  {
+				  if(variables.length>FILL)//if the variables includes the fill
+				  {
+					  if(variables[FILL]==STRIPED)
+					  {
+						  
+					  }
+					  if(variables[FILL]==SOLID)
+					  {
+						  g.fillOval(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);
+					  }
+				  }
+				  else //fill is not a variable
+				  {
+					  g.fillOval(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);//solid fill
+				  }
+				  g.drawOval(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);//outline
+			  }//end circle
+		  }//end for loop
+	  }
+	  else //shape is not a variable
+	  {
+		  g.fillRoundRect(x, y, width, height, 10, 10);//fill card with color
+		  if(!selected)
+			  {g.setColor(Color.black);}
+		  else
+		  	{g.setColor(Color.red);}
+		  g.drawRoundRect(x, y, width, height, 10, 10);//draw border of card
 	  }
 	  
 	  g.setColor(currentColor);
@@ -210,6 +243,17 @@ public class Card {
 		  {throw new IllegalArgumentException("card is not initialized");}
 	  
 	  selected = false;
+  }
+  
+  public void switchSelectedOrDeselected()
+  {
+	  if(!initialized)
+	  {throw new IllegalArgumentException("card is not initialized");}
+	  
+	  if(selected)
+		  {selected = false;}
+	  else
+		  {selected = true;}
   }
   
 }
