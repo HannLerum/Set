@@ -87,7 +87,7 @@ public class Controller extends JFrame   implements MouseListener{
 		numberOfVariables = 4;
 		cardsToASet = 3;
 		//for where to draw everything
-		rows = 5;
+		rows = 6;
 		columns = 7;
 		cardWidth = 75;
 		cardHeight = 150;
@@ -95,7 +95,7 @@ public class Controller extends JFrame   implements MouseListener{
 		firstCardY = 50;
 		cardBufferX = 10;
 		cardBufferY = 10;
-		minimumCards = 25;
+		minimumCards = 40;
 		//dealingStyle = VERTICALLY;
 		dealingStyle = HORIZONTALLY;
 		

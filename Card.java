@@ -195,7 +195,11 @@ public class Card {
 				  {
 					  if(variables[FILL]==STRIPED)
 					  {
-						  
+						  int xDistance = w/(numberOfStripes/2);
+						  for(int j = 1; j<=numberOfStripes/2; j++)
+						  {
+							  g.drawLine(xPoints[0]+j*xDistance, yPoints[0], xPoints[2], yPoints[2]);
+						  }
 					  }
 					  if(variables[FILL]==SOLID)
 					  {
@@ -215,7 +219,12 @@ public class Card {
 				  {
 					  if(variables[FILL]==STRIPED)
 					  {
-						  
+						  int xDistance = w/(numberOfStripes);
+						  int yDistance = h/(numberOfStripes);
+						  for(int j = 1; j<=numberOfStripes; j++)
+						  {
+							  g.drawOval(x+xBuffer+xDistance*j, y+yBuffer+(yBuffer/2+h)*i+yDistance*j, w-xDistance*j*2, h-yDistance*j*2);//outline
+						  }
 					  }
 					  if(variables[FILL]==SOLID)
 					  {
