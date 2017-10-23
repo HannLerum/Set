@@ -11,23 +11,23 @@ import javax.swing.JFrame;
 public class Controller extends JFrame   implements MouseListener{
 	
 	private boolean debugging = false;
+	
 	private boolean gameInitialized = false;
 	private int points;
 	
     private Container gameContentPane;
     private boolean gameIsReady = false;
-    
     private Deck myDeck;
-
-    Card[] cardsOnTable;
-    Card[] selectedCards;
     private int numberOfCardsOnTheTable;
     private int numberOfSelectedCards;
     
     private int numberOfVariables;
     private int cardsToASet;
     private int minimumCards;
-    
+    //variables for drawing the cards
+    Card[] cardsOnTable;
+    Card[] selectedCards;
+    Card[] foundSets;
     private int cardWidth;
     private int cardHeight;
     private int firstCardX;
@@ -36,7 +36,6 @@ public class Controller extends JFrame   implements MouseListener{
     private int cardBufferY;
     private int rows;
     private int columns;
-    
     private int dealingStyle;
 
     private int xMouseOffsetToContentPaneFromJFrame = 0;
@@ -74,40 +73,44 @@ public class Controller extends JFrame   implements MouseListener{
         this.addMouseListener(this);
         
         initialize();
-        
         repaint();
 	}
 	
 	private void initialize()
 	{
+		
 		points = 0;
 		numberOfCardsOnTheTable = 0;
 		numberOfSelectedCards = 0;
 		
 		//eventually make these variables dynamic, but for now they are hardcoded in.
-		numberOfVariables = 3;
+		numberOfVariables = 4;
 		cardsToASet = 3;
-		rows = 3;
-		columns = 9;
+		//for where to draw everything
+		rows = 5;
+		columns = 7;
 		cardWidth = 75;
 		cardHeight = 150;
 		firstCardX = 200;
 		firstCardY = 50;
 		cardBufferX = 10;
 		cardBufferY = 10;
-		minimumCards = 18;
+		minimumCards = 25;
+		//dealingStyle = VERTICALLY;
+		dealingStyle = HORIZONTALLY;
 		
 		if(minimumCards>rows*columns)
 		{
 			throw new IllegalArgumentException("require more cards than can fit on the table.");
 		}
 		
-		dealingStyle = VERTICALLY;
-		//dealingStyle = HORIZONTALLY;
-		
+		//initialize deck and all arrays
 		myDeck = new Deck(numberOfVariables,cardsToASet);
+		//myDeck.shuffle();
+		foundSets = new Card[myDeck.numberOfCards()];
 		selectedCards = new Card[cardsToASet];
 		cardsOnTable = new Card[rows*columns];
+		//deal cards to the table
         for (int i = 0; (i<cardsOnTable.length && i<minimumCards); i++)
         {
         	cardsOnTable[i] = myDeck.deal();
@@ -142,6 +145,19 @@ public class Controller extends JFrame   implements MouseListener{
 	        		cardsOnTable[i].draw(g, x, y, cardWidth, cardHeight);
 	        	}
 	        }
+	        
+	        for( int i = 0 ; i<foundSets.length; i++)
+	        {
+	        	if(foundSets[i]!=null)
+	        	{
+		        	int x = firstCardX+(cardWidth+cardBufferX)*(columns)+(cardWidth+cardBufferX)/2*(i%cardsToASet+1);
+		        	int y = firstCardY+(cardHeight+cardBufferY)/2*(i/cardsToASet);
+		        	
+		        	foundSets[i].draw(g, x, y, cardWidth/2, cardHeight/2);
+	        	}
+	        	
+	        }
+	        
 		}
 	}
 	
@@ -152,6 +168,13 @@ public class Controller extends JFrame   implements MouseListener{
 		
 		int count = 0;
 		//TODO
+		
+		
+		
+		
+		
+		
+		
 		count = 1; // TODO delete this later when the function works
 		return count;
 	}
@@ -160,8 +183,44 @@ public class Controller extends JFrame   implements MouseListener{
 	{
 		if(!gameInitialized)
   			{throw new IllegalArgumentException("game has not been initialized");}
-		//TODO
-		return true;
+		
+		boolean isASet = true;
+		//if the number of cards passed in is incorrect
+		if(cards.length!=cardsToASet)
+		{
+			isASet = false;
+		}
+		//if the array of cards is not full
+		for( int i  = 0; i < cards.length; i++)
+		{
+			if(cards[i]==null)
+			{
+				isASet = false;
+			}
+		}
+		//if any variable appears exactly twice
+		for(int i = 0; i<numberOfVariables ; i++)//for each variable
+		{
+			int[] v = new int[cardsToASet];
+			for(int k = 0 ; k<cardsToASet ; k ++)
+			{
+				v[k] = 0;
+			}
+			for(int j = 0 ; j < cards.length ; j++)
+			{
+				v[(i==Card.NUMBER?(cards[j].getVariable(i)-1):(cards[j].getVariable(i)))]++;
+			}
+			
+			for(int k = 0 ; k<cardsToASet ; k ++)
+			{
+				if(v[k]==2)
+				{
+					isASet = false;
+				}
+			}
+		}
+		
+		return isASet;
 	}
 	
 	private void resetGame()
@@ -226,8 +285,8 @@ public class Controller extends JFrame   implements MouseListener{
 			int xMousePosition = event.getX()-xMouseOffsetToContentPaneFromJFrame;
 			int yMousePosition = event.getY()-yMouseOffsetToContentPaneFromJFrame;
 			
-			/*if(debugging)
-				{System.out.println("clicked at position ("+xMousePosition+","+yMousePosition+").");}*/
+			if(debugging)
+				{System.out.println("clicked at position ("+xMousePosition+","+yMousePosition+").");}
 			
 			//determine which card, if any, the user clicked on, and select or deselect it as [relevent]
 			for(int i = 0; i<cardsOnTable.length; i++)
@@ -246,7 +305,8 @@ public class Controller extends JFrame   implements MouseListener{
     			}
 				
 				if ((xPosition <= xMousePosition && xMousePosition <= xPosition + cardWidth) 
-						&& (yPosition <= yMousePosition && yMousePosition <= yPosition + cardHeight))
+						&& (yPosition <= yMousePosition && yMousePosition <= yPosition + cardHeight)
+						&& cardsOnTable[i]!= null)
 				{
 					if(cardsOnTable[i].isSelected()) // card is currently selected, and this click will deselect it
 					{
@@ -256,7 +316,6 @@ public class Controller extends JFrame   implements MouseListener{
 					{
 						select(cardsOnTable[i]);
 					}
-					
 					repaint();
 					
 					/*if(debugging)
@@ -277,8 +336,27 @@ public class Controller extends JFrame   implements MouseListener{
 			{
 				if(isASet(selectedCards))//if it is a set
 				{
+					System.out.println("It's a set!");
 					//give points
 					points++;
+					
+					//add selected cards to foundSets array
+					for(int i = 0; i<selectedCards.length; i++)
+					{
+						boolean added = false;
+						if(selectedCards[i]!=null)//this should always be true, considering where we are, but just in case
+						{
+							for(int count = 0; (!added && count<foundSets.length) ; count++)
+							{
+								if(foundSets[count]==null)
+								{
+									foundSets[count] = selectedCards[i];
+									added = true;
+								}//end if
+							}//end for
+						}//end if
+					}//end for
+					
 					// remove selected cards from table, but not yet from the array selectedCards
 					for(int i = 0; i<selectedCards.length; i++)
 					{
@@ -296,6 +374,7 @@ public class Controller extends JFrame   implements MouseListener{
 							numberOfCardsOnTheTable--;
 						}//end if
 					}//end for
+					
 					
 					boolean dealing = true;
 					while(dealing)
@@ -356,7 +435,7 @@ public class Controller extends JFrame   implements MouseListener{
 				else //it is not a set
 				{
 					//scold, maybe deduct points
-					System.out.println("Sorry, not a set.");//TODO change to something on the JFrame
+					System.out.println("Sorry, not a set.");//TODO change to something on the JFrame (maybe turn them all red for a moment?)
 				}
 				
 				//empty selectedCards

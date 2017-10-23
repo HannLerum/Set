@@ -123,13 +123,29 @@ public class Card {
 	  
 	  Color currentColor = g.getColor();
 	  
-	  g.setColor(Color.white);
+	  /*g.setColor(Color.white);
 	  g.fillRoundRect(x, y, width, height, 10, 10);//fill card
 	  if(!selected)
 		  {g.setColor(Color.black);}
 	  else
 	  	{g.setColor(Color.red);}
 	  g.drawRoundRect(x, y, width, height, 10, 10);//draw border of card
+*/	  
+	  
+	  if(!selected)
+	  {
+		  g.setColor(Color.white);
+		  g.fillRoundRect(x, y, width, height, 10, 10);//fill card
+		  g.setColor(Color.black);
+		  g.drawRoundRect(x, y, width, height, 10, 10);//draw border of card
+	  }
+	  else
+	  {
+		  g.setColor(Color.black);
+		  g.fillRoundRect(x, y, width, height, 10, 10);//fill card
+		  g.setColor(Color.white);
+		  g.drawRoundRect(x, y, width, height, 10, 10);//draw border of card
+	  }
 	  
 	  g.setColor(COLOR_ARRAY[variables[COLOR]]);
 	  
@@ -312,16 +328,16 @@ public class Card {
 					fill = "solid";
 				}
 				
-				s = (number + " "+color+" "+fill+" "+shape);
+				s = (number + " "+color+" "+fill+" "+shape+(number>1?"s":""));
 			}
 			else//color, number, and shape, but no fill
 			{
-				s = (number + " "+color+" "+shape);
+				s = (number + " "+color+" "+shape+(number>1?"s":""));
 			}
 		}
 		else //color and number, but no shape (there is currently no reason for this though...)
 		{
-			;
+			s = (number+" "+color+(number>1?"s":""));
 		}
 	  }
 	  else // no variables but the color
