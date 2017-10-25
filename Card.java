@@ -32,6 +32,7 @@ public class Card {
   public static final int SQUARE = 0;
   public static final int TRIANGLE = 1;
   public static final int CIRCLE = 2;
+  public static final int STAR = 3;
   //fill
   public static final int OUTLINE = 0;
   public static final int STRIPED = 1;
@@ -237,6 +238,28 @@ public class Card {
 				  }
 				  g.drawOval(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);//outline
 			  }//end circle
+			  
+			  if(variables[SHAPE]==STAR)
+			  {
+				  if(variables.length>FILL)//if the variables includes the fill
+				  {
+					  if(variables[FILL]==STRIPED)
+					  {
+						  //TODO make stripes in the star
+					  }
+					  
+					  if(variables[FILL]==SOLID)
+					  {
+						//TODO make a solid filled star
+					  }
+				  }
+				  else // fill is not a variable
+				  {
+					//TODO make a solid filled star
+				  }
+				//TODO draw star outline
+			  }//end star
+			  
 		  }//end for loop
 	  }
 	  else //shape is not a variable

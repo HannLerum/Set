@@ -91,7 +91,7 @@ public class Controller extends JFrame   implements MouseListener{
 		columns = 7;
 		cardWidth = 75;
 		cardHeight = 150;
-		firstCardX = 200;
+		firstCardX = 150;
 		firstCardY = 50;
 		cardBufferX = 10;
 		cardBufferY = 10;
@@ -126,6 +126,7 @@ public class Controller extends JFrame   implements MouseListener{
 		super.paint(g);
 		if(gameInitialized)
 		{
+			//paint all cards on the table
 	        for (int i = 0; i<cardsOnTable.length; i++)
 	        {
 	        	if(cardsOnTable[i]!=null)
@@ -146,18 +147,17 @@ public class Controller extends JFrame   implements MouseListener{
 	        	}
 	        }
 	        
+	        //paint all cards in sets already claimed
 	        for( int i = 0 ; i<foundSets.length; i++)
 	        {
 	        	if(foundSets[i]!=null)
 	        	{
-		        	int x = firstCardX+(cardWidth+cardBufferX)*(columns)+(cardWidth+cardBufferX)/2*(i%cardsToASet+1);
-		        	int y = firstCardY+(cardHeight+cardBufferY)/2*(i/cardsToASet);
+		        	int x = firstCardX + (cardWidth+cardBufferX)*(columns) + (cardWidth+cardBufferX)/2*( 1 + i%cardsToASet + (i/(cardsToASet*rows*2))*(cardsToASet+1) ) ; // starting position + combined width of all the dealt cards + width of one minicard *( 1 (as a buffer space) + how many are already in this row + (how many rows are before this row)*(how many cards are in each of those rows + 1 (as a buffer space))
+		        	int y = firstCardY+(cardHeight+cardBufferY)/2*((i/cardsToASet)%(rows*2));
 		        	
 		        	foundSets[i].draw(g, x, y, cardWidth/2, cardHeight/2);
 	        	}
-	        	
 	        }
-	        
 		}
 	}
 	
