@@ -169,16 +169,14 @@ public class Controller extends JFrame   implements MouseListener{
 	  		{throw new IllegalArgumentException("game has not been initialized");}
 		
 		int count = 0;
-		//TODO
-		
-		
-		
-		
-		
-		
-		
-		count = 1; // TODO delete this later when the function works
-		return count;
+		int numberOfSets = 0;
+		for (int card1 = 0, card2 = 1, card3 = 2; card3<=cardsOnTable.length; card1+=3, card2+=3, card3+=3)
+		{
+			Card[] test = new Card[3];
+			
+			isASet(test);
+		}
+		return numberOfSets;
 	}
 	
 	private boolean isASet(Card[] cards)
