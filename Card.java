@@ -4,6 +4,7 @@ import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
+import java.awt.geom.Ellipse2D;
 
 import javax.swing.JFrame; // for JFrame
 import javax.swing.JLabel;
@@ -25,28 +26,39 @@ public class Card {
   public static final int FILL = 3;
   
   //color
-  public static final int GREEN = 0;
-  public static final int BLUE = 1;
-  public static final int YELLOW = 2;
+  final int GREEN = 0;
+  final int BLUE = 1;
+  final int YELLOW = 2;
+  final int PURPLE = 3;
+  final int RED = 4;
+  final int ORANGE = 5;
   //shape
   public static final int SQUARE = 0;
-  public static final int TRIANGLE = 1;
+  public static final int TRIANGLE = 3;
   public static final int CIRCLE = 2;
-  public static final int STAR = 3;
+  public static final int STAR = 1;
+  public static final int SQUIGGLE = 4;
   //fill
   public static final int OUTLINE = 0;
-  public static final int STRIPED = 1;
+  public static final int STRIPED = 3;
   public static final int SOLID = 2;
+  public static final int GRADIENT = 1;
+  public static final int DOUBLE_OUTLINE = 4;
   
   
-	final Color COLOR_RED = new Color(255,0,0);
-	final Color COLOR_BLUE = new Color(0,0,255);
-	final Color COLOR_YELLOW = new Color(204,204,0);
-	final Color COLOR_BLACK = new Color(0,0,0);
-	final Color COLOR_GREEN = new Color(0,255,0);
-	final Color COLOR_WHITE = new Color(255,255,255);
+	final Color red = new Color(255,0,0);
+	final Color orange = new Color(255,140,0);
+	final Color yellow = new Color(204,204,0);
+	final Color green = new Color(0,255,0);
+	final Color blue = new Color(0,0,255);
+	final Color purple = new Color(128,0,128);
 	
-	final Color[] COLOR_ARRAY = {COLOR_GREEN, COLOR_BLUE, COLOR_YELLOW};
+	Color[][] colorschemes = {
+			{green, blue, yellow, purple, red, orange},
+			{red, orange, yellow, green, blue, purple},
+			{},
+	};
+	
   
   public Card()
   {
@@ -148,7 +160,7 @@ public class Card {
 		  g.drawRoundRect(x, y, width, height, 10, 10);//draw border of card
 	  }
 	  
-	  g.setColor(COLOR_ARRAY[variables[COLOR]]);
+	  g.setColor(colorschemes[0][variables[COLOR]]);
 	  
 	  if(variables.length>SHAPE)//if the variables includes shape
 	  {
@@ -179,6 +191,12 @@ public class Card {
 					  {
 						  g.fillRect(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);
 					  }
+					  if(variables[FILL]==GRADIENT)
+					  {
+						  //TODO make a gradient square
+						  
+						  
+					  }
 				  }
 				  else // fill is not a variable
 				  {
@@ -206,6 +224,11 @@ public class Card {
 					  {
 						  g.fillPolygon(xPoints, yPoints, 3);
 					  }
+					  
+					  if(variables[FILL]==GRADIENT)
+					  {
+						  //TODO make a gradient triangle
+					  }
 				  }
 				  else //fill is not a variable
 				  {
@@ -231,6 +254,18 @@ public class Card {
 					  {
 						  g.fillOval(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);
 					  }
+					  
+					  if(variables[FILL]==GRADIENT)
+					  {
+						  //TODO make a gradient circle
+						  
+						  GradientPaint gp = new GradientPaint((float)(x+.1*width), (float) (y+.7*height), g.getColor(), (float)(x+.25*width), (float) (y+.85*height), Color.white) ; //(x,y,Color,x2,y2,Color)
+				            Graphics2D g2d = (Graphics2D) g;
+				            g2d.setPaint(gp);
+				            g2d.fill(new Ellipse2D.Float((float)(x+.1*width), (float) (y+.7*height), (float)(.2*width), (float) (.2* height)));//(x,y,width,height) -- different than Gradient
+				        
+						  
+					  }
 				  }
 				  else //fill is not a variable
 				  {
@@ -241,24 +276,59 @@ public class Card {
 			  
 			  if(variables[SHAPE]==STAR)
 			  {
+				  int[] xPoints = {x+xBuffer*2 , x+(width/2) , x+(width-xBuffer*2) , x+xBuffer , x+(width-xBuffer)};
+				  int[] yPoints = {y+yBuffer+(yBuffer/2+h)*i+h  , y+yBuffer+(yBuffer/2+h)*i , y+yBuffer+(yBuffer/2+h)*i+h , y+yBuffer+(yBuffer/2+h)*i+h/3 , y+yBuffer+(yBuffer/2+h)*i+h/3};
+				  
 				  if(variables.length>FILL)//if the variables includes the fill
 				  {
 					  if(variables[FILL]==STRIPED)
 					  {
 						  //TODO make stripes in the star
+						  
 					  }
 					  
 					  if(variables[FILL]==SOLID)
 					  {
-						//TODO make a solid filled star
+						g.fillPolygon(xPoints, yPoints, 5);
+					  }
+					  
+					  if(variables[FILL]==GRADIENT)
+					  {
+						  //TODO make a gradient star
 					  }
 				  }
 				  else // fill is not a variable
 				  {
-					//TODO make a solid filled star
+						g.fillPolygon(xPoints, yPoints, 5);
 				  }
-				//TODO draw star outline
+				  g.drawPolygon(xPoints, yPoints, 5);
 			  }//end star
+			  
+			  if(variables[SHAPE]==SQUIGGLE)
+			  {
+				  if(variables.length>FILL)//if the variables includes the fill
+				  {
+					  if(variables[FILL]==STRIPED)
+					  {
+						  //TODO make stripes in the squiggle
+						  
+					  }
+					  
+					  if(variables[FILL]==SOLID)
+					  {
+						//TODO make a solid squiggle
+					  }
+					  
+					  if(variables[FILL]==GRADIENT)
+					  {
+						  //TODO make a gradient squiggle
+					  }
+				  }
+				  else // fill is not a variable
+				  {
+					//TODO make a solid squiggle
+				  }
+			  }
 			  
 		  }//end for loop
 	  }
