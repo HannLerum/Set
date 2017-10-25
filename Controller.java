@@ -53,7 +53,7 @@ public class Controller extends JFrame   implements MouseListener{
 	Controller()
 	{
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		int width = (int)screenSize.getWidth()/2;
+		int width = (int)screenSize.getWidth();
 		int height = (int)screenSize.getHeight();
 		
         this.setSize(width, height);
@@ -88,14 +88,14 @@ public class Controller extends JFrame   implements MouseListener{
 		cardsToASet = 3;
 		//for where to draw everything
 		rows = 6;
-		columns = 7;
+		columns = 6;
 		cardWidth = 75;
 		cardHeight = 150;
 		firstCardX = 150;
 		firstCardY = 50;
 		cardBufferX = 10;
 		cardBufferY = 10;
-		minimumCards = 40;
+		minimumCards = 30;
 		//dealingStyle = VERTICALLY;
 		dealingStyle = HORIZONTALLY;
 		
@@ -126,6 +126,7 @@ public class Controller extends JFrame   implements MouseListener{
 		super.paint(g);
 		if(gameInitialized)
 		{
+			int counter = 0;
 			//paint all cards on the table
 	        for (int i = 0; i<cardsOnTable.length; i++)
 	        {
@@ -135,15 +136,16 @@ public class Controller extends JFrame   implements MouseListener{
 	        		int y;
 	        		if(dealingStyle == HORIZONTALLY)
 	        		{
-		        		x = firstCardX+(cardWidth+cardBufferX)*(i%columns);
-		    			y = firstCardY+(cardHeight+cardBufferY)*(i/columns);
+		        		x = firstCardX+(cardWidth+cardBufferX)*(counter%columns);
+		    			y = firstCardY+(cardHeight+cardBufferY)*(counter/columns);
 	        		}
 	        		else //if(dealingStyle == VERTICALLY)
 	    			{
-	    				x = firstCardX+(cardWidth+cardBufferX)*(i/rows);
-	    				y = firstCardY+(cardHeight+cardBufferY)*(i%rows);
+	    				x = firstCardX+(cardWidth+cardBufferX)*(counter/rows);
+	    				y = firstCardY+(cardHeight+cardBufferY)*(counter%rows);
 	    			}
 	        		cardsOnTable[i].draw(g, x, y, cardWidth, cardHeight);
+	        		counter++;
 	        	}
 	        }
 	        
@@ -289,47 +291,53 @@ public class Controller extends JFrame   implements MouseListener{
 				{System.out.println("clicked at position ("+xMousePosition+","+yMousePosition+").");}
 			
 			//determine which card, if any, the user clicked on, and select or deselect it as [relevent]
+			int counter = 0;
 			for(int i = 0; i<cardsOnTable.length; i++)
 			{
-				int xPosition;
-				int yPosition;
-				if(dealingStyle == HORIZONTALLY)
-        		{
-	        		xPosition = firstCardX+(cardWidth+cardBufferX)*(i%columns);
-	    			yPosition = firstCardY+(cardHeight+cardBufferY)*(i/columns);
-        		}
-        		else //if(dealingStyle == VERTICALLY)
-    			{
-    				xPosition = firstCardX+(cardWidth+cardBufferX)*(i/rows);
-    				yPosition = firstCardY+(cardHeight+cardBufferY)*(i%rows);
-    			}
-				
-				if ((xPosition <= xMousePosition && xMousePosition <= xPosition + cardWidth) 
-						&& (yPosition <= yMousePosition && yMousePosition <= yPosition + cardHeight)
-						&& cardsOnTable[i]!= null)
+				if(cardsOnTable[i]!=null)
 				{
-					if(cardsOnTable[i].isSelected()) // card is currently selected, and this click will deselect it
-					{
-						deselect(cardsOnTable[i]);
-					}
-					else //card is currently deselected, and this click will select it
-					{
-						select(cardsOnTable[i]);
-					}
-					repaint();
+					int xPosition;
+					int yPosition;
+					if(dealingStyle == HORIZONTALLY)
+	        		{
+		        		xPosition = firstCardX+(cardWidth+cardBufferX)*(counter%columns);
+		    			yPosition = firstCardY+(cardHeight+cardBufferY)*(counter/columns);
+	        		}
+	        		else //if(dealingStyle == VERTICALLY)
+	    			{
+	    				xPosition = firstCardX+(cardWidth+cardBufferX)*(counter/rows);
+	    				yPosition = firstCardY+(cardHeight+cardBufferY)*(counter%rows);
+	    			}
 					
-					/*if(debugging)
+					if ((xPosition <= xMousePosition && xMousePosition <= xPosition + cardWidth) 
+							&& (yPosition <= yMousePosition && yMousePosition <= yPosition + cardHeight)
+							&& cardsOnTable[i]!= null)
 					{
-						System.out.println("clicked on card #"+i+" (row "+( ( dealingStyle == HORIZONTALLY?(i/columns):(i%rows) ) +1)
-								+", column "+(( dealingStyle == HORIZONTALLY?(i%columns):(i/rows) )+1)+"), "+(cardsOnTable[i].isSelected()?"selecting":"deselecting")+" it.");
-						System.out.println("\n"+numberOfSelectedCards+" card"+(numberOfSelectedCards==1?" is":"s are")+" selected: ");
-						for(int j = 0; j<selectedCards.length;j++)
+						if(cardsOnTable[i].isSelected()) // card is currently selected, and this click will deselect it
 						{
-							System.out.println(selectedCards[j] + " ");
+							deselect(cardsOnTable[i]);
 						}
-						System.out.println("");
-					}*/
+						else //card is currently deselected, and this click will select it
+						{
+							select(cardsOnTable[i]);
+						}
+						repaint();
+						
+						/*if(debugging)
+						{
+							System.out.println("clicked on card #"+i+" (row "+( ( dealingStyle == HORIZONTALLY?(i/columns):(i%rows) ) +1)
+									+", column "+(( dealingStyle == HORIZONTALLY?(i%columns):(i/rows) )+1)+"), "+(cardsOnTable[i].isSelected()?"selecting":"deselecting")+" it.");
+							System.out.println("\n"+numberOfSelectedCards+" card"+(numberOfSelectedCards==1?" is":"s are")+" selected: ");
+							for(int j = 0; j<selectedCards.length;j++)
+							{
+								System.out.println(selectedCards[j] + " ");
+							}
+							System.out.println("");
+						}*/
+					}
+					counter++;
 				}
+				
 			}
 			
 			if(numberOfSelectedCards == cardsToASet) //if the number of cards selected is the number of cards needed for a set.
