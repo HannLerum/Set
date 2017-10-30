@@ -1,5 +1,6 @@
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -10,6 +11,7 @@ import javax.swing.JFrame; // for JFrame
 import javax.swing.JLabel;
 import javax.swing.JPanel; // for JPanel
 import javax.swing.border.EmptyBorder;
+
 
 
 public class Card {
@@ -33,16 +35,20 @@ public class Card {
   final int RED = 4;
   final int ORANGE = 5;
   //shape
-  public static final int SQUARE = 0;
-  public static final int TRIANGLE = 3;
-  public static final int CIRCLE = 2;
-  public static final int STAR = 1;
-  public static final int SQUIGGLE = 4;
+  public static final int MOUNTAINS = 0;
+  public static final int DIAMOND = 1;
+  public static final int HOURGLASS = 2;
+  public static final int BOWTIE = 3;
+  public static final int TRIANGLE = 4;
+  public static final int SQUARE = 5;
+  public static final int CIRCLE = 6;
+  final int STAR = 20;
+  final int LIGHTNING_BOLT = 21;
   //fill
-  public static final int OUTLINE = 0;
+  public static final int OUTLINE = 2;
   public static final int STRIPED = 3;
-  public static final int SOLID = 2;
-  public static final int GRADIENT = 1;
+  public static final int SOLID = 1;
+  public static final int GRADIENT = 0;
   public static final int DOUBLE_OUTLINE = 4;
   
   
@@ -134,16 +140,7 @@ public class Card {
 	  if(!initialized)
 	  	{throw new IllegalArgumentException("card is not initialized");}
 	  
-	  Color currentColor = g.getColor();
-	  
-	  /*g.setColor(Color.white);
-	  g.fillRoundRect(x, y, width, height, 10, 10);//fill card
-	  if(!selected)
-		  {g.setColor(Color.black);}
-	  else
-	  	{g.setColor(Color.red);}
-	  g.drawRoundRect(x, y, width, height, 10, 10);//draw border of card
-*/	  
+	  Color currentColor = g.getColor();  
 	  
 	  if(!selected)
 	  {
@@ -193,9 +190,10 @@ public class Card {
 					  }
 					  if(variables[FILL]==GRADIENT)
 					  {
-						  //TODO make a gradient square
-						  
-						  
+						  	GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, Color.white) ; //(x,y,Color,x2,y2,Color)
+				            Graphics2D g2d = (Graphics2D) g;
+				            g2d.setPaint(gp);
+				            g2d.fillRect(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);
 					  }
 				  }
 				  else // fill is not a variable
@@ -227,7 +225,10 @@ public class Card {
 					  
 					  if(variables[FILL]==GRADIENT)
 					  {
-						  //TODO make a gradient triangle
+						  GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, Color.white) ; //(x,y,Color,x2,y2,Color)
+				          Graphics2D g2d = (Graphics2D) g;
+				          g2d.setPaint(gp);
+				          g2d.fillPolygon(xPoints, yPoints, 3);
 					  }
 				  }
 				  else //fill is not a variable
@@ -247,7 +248,7 @@ public class Card {
 						  int yDistance = h/(numberOfStripes);
 						  for(int j = 1; j<=numberOfStripes; j++)
 						  {
-							  g.drawOval(x+xBuffer+xDistance*j, y+yBuffer+(yBuffer/2+h)*i+yDistance*j, w-xDistance*j*2, h-yDistance*j*2);//outline
+							  g.drawOval(x+xBuffer+xDistance*j, y+yBuffer+(yBuffer/2+h)*i+yDistance*j, w-xDistance*j*2, h-yDistance*j*2);
 						  }
 					  }
 					  if(variables[FILL]==SOLID)
@@ -257,14 +258,10 @@ public class Card {
 					  
 					  if(variables[FILL]==GRADIENT)
 					  {
-						  //TODO make a gradient circle
-						  
-						  GradientPaint gp = new GradientPaint((float)(x+.1*width), (float) (y+.7*height), g.getColor(), (float)(x+.25*width), (float) (y+.85*height), Color.white) ; //(x,y,Color,x2,y2,Color)
-				            Graphics2D g2d = (Graphics2D) g;
+						  	GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, Color.white) ; //(x,y,Color,x2,y2,Color)
+						  	Graphics2D g2d = (Graphics2D) g;
 				            g2d.setPaint(gp);
-				            g2d.fill(new Ellipse2D.Float((float)(x+.1*width), (float) (y+.7*height), (float)(.2*width), (float) (.2* height)));//(x,y,width,height) -- different than Gradient
-				        
-						  
+				            g2d.fillOval(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);
 					  }
 				  }
 				  else //fill is not a variable
@@ -273,6 +270,208 @@ public class Card {
 				  }
 				  g.drawOval(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);//outline
 			  }//end circle
+			  
+			  
+			  if(variables[SHAPE]==HOURGLASS)
+			  {
+//				  int[] xPoints = {x+xBuffer, x+xBuffer+w*2/3, x+xBuffer+w*1/3, x+xBuffer+w};
+//				  int[] yPoints = {y+yBuffer+h*1/3+(h+yBuffer)*i, y+yBuffer+(yBuffer+h)*i, y+yBuffer+h+(h+yBuffer)*i, y+yBuffer+h*2/3+(h+yBuffer)*i };
+				  
+				  int[] xPoints = {x+xBuffer, x+xBuffer+w , x+xBuffer, x+xBuffer+w };
+				  int[] yPoints = {y+yBuffer+(yBuffer/2+h)*i , y+yBuffer+(yBuffer/2+h)*i , y+yBuffer+h+(yBuffer/2+h)*i , y+yBuffer+h+(yBuffer/2+h)*i};
+				  
+				  if(variables.length>FILL)//if the variables includes the fill
+				  {
+					  if(variables[FILL]==STRIPED)
+					  {
+						  int xDistance = w/(numberOfStripes/2);
+						  for(int j = 1; j<=numberOfStripes/2; j++)
+						  {
+							  g.drawLine(xPoints[0]+j*xDistance, yPoints[0], (xPoints[2]+xPoints[3])/2, (yPoints[1]+yPoints[2])/2);
+							  g.drawLine(xPoints[0]+j*xDistance, yPoints[3], (xPoints[2]+xPoints[3])/2, (yPoints[1]+yPoints[2])/2);
+						  }
+					  }
+					  
+					  if(variables[FILL]==SOLID)
+					  {
+						g.fillPolygon(xPoints, yPoints, 4);
+					  }
+					  
+					  if(variables[FILL]==GRADIENT)
+					  {
+						  GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, Color.white) ; //(x,y,Color,x2,y2,Color)
+				          Graphics2D g2d = (Graphics2D) g;
+				          g2d.setPaint(gp);
+				          g2d.fillPolygon(xPoints, yPoints, 4);
+					  }
+				  }
+				  else // fill is not a variable
+				  {
+					  g.fillPolygon(xPoints, yPoints, 4);
+				  }
+				  g.drawPolygon(xPoints, yPoints, 4);
+			  }//end hourglass
+			  
+			  if(variables[SHAPE]==BOWTIE)
+			  {
+				  int[] xPoints = {x+xBuffer, x+xBuffer, x+xBuffer+w , x+xBuffer+w };
+				  int[] yPoints = {y+yBuffer+(yBuffer/2+h)*i , y+yBuffer+h+(yBuffer/2+h)*i , y+yBuffer+(yBuffer/2+h)*i , y+yBuffer+h+(yBuffer/2+h)*i};
+				  
+				  if(variables.length>FILL)//if the variables includes the fill
+				  {
+					  if(variables[FILL]==STRIPED)
+					  {
+						  int yDistance = h/(numberOfStripes/2);
+						  for(int j = 1; j<=numberOfStripes/2; j++)
+						  {
+							  g.drawLine( xPoints[0], yPoints[0]+j*yDistance, (xPoints[1]+xPoints[2])/2, (yPoints[2]+yPoints[3])/2);
+							  g.drawLine( xPoints[3], yPoints[0]+j*yDistance, (xPoints[1]+xPoints[2])/2, (yPoints[2]+yPoints[3])/2);
+						  }
+					  }
+					  
+					  if(variables[FILL]==SOLID)
+					  {
+						g.fillPolygon(xPoints, yPoints, 4);
+					  }
+					  
+					  if(variables[FILL]==GRADIENT)
+					  {
+						  GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, Color.white) ; //(x,y,Color,x2,y2,Color)
+				          Graphics2D g2d = (Graphics2D) g;
+				          g2d.setPaint(gp);
+				          g2d.fillPolygon(xPoints, yPoints, 4);
+					  }
+				  }
+				  else // fill is not a variable
+				  {
+					  g.fillPolygon(xPoints, yPoints, 4);
+				  }
+				  g.drawPolygon(xPoints, yPoints, 4);
+			  }// end bowtie
+			  
+			  if(variables[SHAPE]==DIAMOND)
+			  {
+				  int[] xPoints = {x+width/2 , x+xBuffer , x+width/2 , x+width-xBuffer };
+				  int[] yPoints = {y+yBuffer+(yBuffer/2+h)*i, y+yBuffer+h/2+(yBuffer/2+h)*i, y+yBuffer+h+(yBuffer/2+h)*i,y+yBuffer+h/2+(yBuffer/2+h)*i};
+				  
+				  if(variables.length>FILL)//if the variables includes the fill
+				  {
+					  if(variables[FILL]==STRIPED)
+					  {
+						  int yDistance = h/(numberOfStripes/2);
+						  int xDistance = w/(numberOfStripes/2);
+						  for(int j = 1; j<=numberOfStripes/2; j++)
+						  {
+							  g.drawLine(xPoints[1],yPoints[1],xPoints[0],yPoints[0]+yDistance*j);
+							  g.drawLine(xPoints[3],yPoints[3],xPoints[0],yPoints[0]+yDistance*j);
+							  g.drawLine(xPoints[0],yPoints[0],xPoints[1]+xDistance*j,yPoints[1]);
+							  g.drawLine(xPoints[2],yPoints[2],xPoints[1]+xDistance*j,yPoints[1]);
+						  }
+					  }
+					  
+					  if(variables[FILL]==SOLID)
+					  {
+						g.fillPolygon(xPoints, yPoints, 4);
+					  }
+					  
+					  if(variables[FILL]==GRADIENT)
+					  {
+						  GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, Color.white) ; //(x,y,Color,x2,y2,Color)
+				          Graphics2D g2d = (Graphics2D) g;
+				          g2d.setPaint(gp);
+				          g2d.fillPolygon(xPoints, yPoints, 4);
+					  }
+				  }
+				  else // fill is not a variable
+				  {
+						g.fillPolygon(xPoints, yPoints, 4);
+				  }
+				  g.drawPolygon(xPoints, yPoints, 4);
+			  }//end diamond
+			  
+			  if(variables[SHAPE] == MOUNTAINS)
+			  {
+				  int[][]xPoints = {
+						  {x+xBuffer,x+xBuffer+w/5*3,(x+xBuffer+x+xBuffer+w/5*3)/2},
+						  {x+xBuffer+w/5*2,x+xBuffer+w,(x+xBuffer+w/5*2+x+xBuffer+w)/2},
+						  {x+xBuffer+w/5*1,x+xBuffer+w/5*4,(x+xBuffer+w/5*1+x+xBuffer+w/5*4)/2}};
+				  int[][]yPoints = {
+						  {y+yBuffer+(yBuffer/2+h)*i+h/7*6 , y+yBuffer+(yBuffer/2+h)*i+h/7*6 , y+yBuffer+(yBuffer/2+h)*i},
+						  {y+yBuffer+(yBuffer/2+h)*i+h/7*5 , y+yBuffer+(yBuffer/2+h)*i+h/7*5 , y+yBuffer+(yBuffer/2+h)*i+h/7*2},
+						  {y+yBuffer+(yBuffer/2+h)*i+h , y+yBuffer+(yBuffer/2+h)*i+h , y+yBuffer+(yBuffer/2+h)*i+h/7}};
+				  
+				  Color temp = g.getColor();
+				  Color background = (selected?Color.black:Color.WHITE);
+				  
+				  if(variables.length>FILL)//if the variables includes the fill
+				  {
+					  if(variables[FILL]==OUTLINE)
+					  {
+						  for(int triangle = 0; triangle < 3; triangle++)
+						  {
+							  g.drawPolygon(xPoints[triangle], yPoints[triangle], 3);
+						  }
+						  g.setColor(background);
+						  g.fillPolygon(xPoints[2], yPoints[2], 3);
+						  g.setColor(temp);
+						  g.drawPolygon(xPoints[2], yPoints[2], 3);
+					  }
+					  if(variables[FILL]==STRIPED)
+					  {
+						  for(int triangle = 0; triangle < 3; triangle++)
+						  {
+							  int xDistance = (xPoints[triangle][1]-xPoints[triangle][0])/(numberOfStripes/2);
+							  if (triangle == 2)
+							  {
+								  g.setColor(background);
+								  g.fillPolygon(xPoints[2], yPoints[2], 3);
+								  g.setColor(temp);
+							  }
+							  for(int j = 1; j<=numberOfStripes/2; j++)
+							  {
+								  g.drawLine(xPoints[triangle][0]+j*xDistance, yPoints[triangle][0], xPoints[triangle][2], yPoints[triangle][2]);
+							  }
+							  g.drawPolygon(xPoints[triangle], yPoints[triangle], 3);
+						  }
+					  }
+					  
+					  if(variables[FILL]==SOLID)
+					  {	
+						  for(int triangle = 0; triangle < 3; triangle++)
+						  {
+							  g.fillPolygon(xPoints[triangle], yPoints[triangle], 3);
+							  g.setColor(background);
+							  g.drawPolygon(xPoints[triangle], yPoints[triangle], 3);
+							  g.setColor(temp);
+						  }
+					  }
+					  
+					  if(variables[FILL]==GRADIENT)
+					  {
+						  GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, Color.white) ; //(x,y,Color,x2,y2,Color)
+				          Graphics2D g2d = (Graphics2D) g;
+				          g2d.setPaint(gp);
+				          for(int triangle = 0; triangle < 3; triangle++)
+						  {
+							  g2d.fillPolygon(xPoints[triangle], yPoints[triangle], 3);
+							  g.setColor(background);
+							  g.drawPolygon(xPoints[triangle], yPoints[triangle], 3);
+							  g2d.setPaint(gp);
+						  }
+				          g.setColor(temp);
+					  }
+				  }
+				  else // fill is not a variable
+				  {
+					  for(int triangle = 0; triangle < 3; triangle++)
+					  {
+						  g.fillPolygon(xPoints[triangle], yPoints[triangle], 3);
+						  g.setColor(background);
+						  g.drawPolygon(xPoints[triangle], yPoints[triangle], 3);
+						  g.setColor(temp);
+					  }
+				  }
+			  }// end mountains
 			  
 			  if(variables[SHAPE]==STAR)
 			  {
@@ -294,7 +493,10 @@ public class Card {
 					  
 					  if(variables[FILL]==GRADIENT)
 					  {
-						  //TODO make a gradient star
+						  GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, Color.white) ; //(x,y,Color,x2,y2,Color)
+				          Graphics2D g2d = (Graphics2D) g;
+				          g2d.setPaint(gp);
+				          g2d.fillPolygon(xPoints, yPoints, 5);
 					  }
 				  }
 				  else // fill is not a variable
@@ -304,44 +506,55 @@ public class Card {
 				  g.drawPolygon(xPoints, yPoints, 5);
 			  }//end star
 			  
-			  if(variables[SHAPE]==SQUIGGLE)
+			  if(variables[SHAPE]==LIGHTNING_BOLT)
 			  {
+				  int[] xPoints = {x+xBuffer+w/5, x+xBuffer+w*2/5, x+xBuffer, x+xBuffer+w*4/5, x+xBuffer+w*3/5, x+xBuffer+w};
+				  int[] yPoints = {y+h+(yBuffer/2+h)*i , y+h*4/7+(yBuffer/2+h)*i , y+h*5/9+(yBuffer/2+h)*i , y+(yBuffer/2+h)*i , y+h*3/7+(yBuffer/2+h)*i , y+h*4/9+(yBuffer/2+h)*i , y+h+(yBuffer/2+h)*i};
+				  
 				  if(variables.length>FILL)//if the variables includes the fill
 				  {
 					  if(variables[FILL]==STRIPED)
 					  {
-						  //TODO make stripes in the squiggle
-						  
+						  //TODO make stripes in the lightningbolt
 					  }
 					  
 					  if(variables[FILL]==SOLID)
 					  {
-						//TODO make a solid squiggle
+						g.fillPolygon(xPoints, yPoints, 6);
 					  }
 					  
 					  if(variables[FILL]==GRADIENT)
 					  {
-						  //TODO make a gradient squiggle
+						  GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, Color.white) ; //(x,y,Color,x2,y2,Color)
+				          Graphics2D g2d = (Graphics2D) g;
+				          g2d.setPaint(gp);
+				          g2d.fillPolygon(xPoints, yPoints, 6);
 					  }
 				  }
 				  else // fill is not a variable
 				  {
-					//TODO make a solid squiggle
+					  g.fillPolygon(xPoints, yPoints, 6);
 				  }
-			  }
+				  g.drawPolygon(xPoints, yPoints, 6);
+			  }//end lightningbolt
 			  
 		  }//end for loop
 	  }
 	  else //shape is not a variable
 	  {
-		  g.fillRoundRect(x, y, width, height, 10, 10);//fill card with color
-		  if(!selected)
-			  {g.setColor(Color.black);}
-		  else
-		  	{g.setColor(Color.red);}
-		  g.drawRoundRect(x, y, width, height, 10, 10);//draw border of card
+		  g.fillRoundRect(x+10, y+10, width-20, height-20, 10, 10);//fill card with color
+		  
+		  
 	  }
-	  
+	  if(variables.length>NUMBER)
+	  {
+		  if(selected)
+		  {g.setColor(Color.WHITE);}
+		  else
+		  { g.setColor(Color.BLACK);}
+		  g.setFont(new Font(null, Font.CENTER_BASELINE, 20) );
+		  g.drawString(""+variables[NUMBER], x+10, y+30);
+	  }
 	  g.setColor(currentColor);
   }
   
