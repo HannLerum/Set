@@ -1,3 +1,4 @@
+// The existential dread that sets in as code continually kicks up the same errors is matched only by the sinking feeling ascociated with reading Trump's twitter
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.GradientPaint;

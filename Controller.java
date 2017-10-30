@@ -95,7 +95,7 @@ public class Controller extends JFrame   implements MouseListener{
 		firstCardY = 50;
 		cardBufferX = 10;
 		cardBufferY = 10;
-		minimumCards = 30;
+		minimumCards = 9;
 		//dealingStyle = VERTICALLY;
 		dealingStyle = HORIZONTALLY;
 		
@@ -177,20 +177,23 @@ public class Controller extends JFrame   implements MouseListener{
 			tablecards[i] = tableCards[i];
 		}
 		
-//		for(int card1=0;card1<tableCards.length-2; card1++)
-//		{
-//		for(int card2=1;card2<tableCards.length-1; card2++)
-//		{
-//		for(int card3=2;card3<tableCards.length; card3++)
-//		{
-//			test[0] = tablecards[card1];test[1] = tablecards[card2];test[2] = tablecards[card3];
-//			if (isASet(test)==true)
-//				numberOfSets++;
-//		}}}
-//		System.out.println(numberOfSets);
-//		return numberOfSets;
+		for(int card1=0;card1<tableCards.length-2; card1++)
+			{
+			for(int card2=card1+1;card2<tableCards.length-1; card2++)
+				{
+				for(int card3=card2+1;card3<tableCards.length; card3++)
+					{
+					test[0] = tablecards[card1];test[1] = tablecards[card2];test[2] = tablecards[card3];
+					if (isASet(test)==true)
+						numberOfSets++;
+			//System.out.println(numberOfSets);
+					}
+				}
+			}
+		System.out.println(numberOfSets);
+		return numberOfSets;
 		
-		return 1;
+		//return 1;
 	}
 	
 	private boolean isASet(Card[] cards)
@@ -353,7 +356,10 @@ public class Controller extends JFrame   implements MouseListener{
 				
 			}
 			
-			if(numberOfSelectedCards == cardsToASet) //if the number of cards selected is the number of cards needed for a set.
+			
+			
+			
+			if(numberOfSelectedCards >= cardsToASet) //if the number of cards selected is the number of cards needed for a set.
 			{
 				if(isASet(selectedCards))//if it is a set
 				{
