@@ -95,7 +95,7 @@ public class Controller extends JFrame   implements MouseListener{
 		firstCardY = 50;
 		cardBufferX = 10;
 		cardBufferY = 10;
-		minimumCards = 30;
+		minimumCards = 9;
 		//dealingStyle = VERTICALLY;
 		dealingStyle = HORIZONTALLY;
 		
@@ -163,22 +163,37 @@ public class Controller extends JFrame   implements MouseListener{
 		}
 	}
 	
-	private int howManySets()
+	private int howManySets(Card[] tableCards)
 	{
 		if(!gameInitialized)
 	  		{throw new IllegalArgumentException("game has not been initialized");}
 		
-		int count = 0;
-		//TODO
+		Card [] tablecards = new Card [tableCards.length];
+		Card [] test = new Card[3];
+		int numberOfSets = 0;
 		
+		for (int i = 0; i<tableCards.length; i++)
+		{
+			tablecards[i] = tableCards[i];
+		}
 		
+		for(int card1=0;card1<tableCards.length-2; card1++)
+			{
+			for(int card2=card1+1;card2<tableCards.length-1; card2++)
+				{
+				for(int card3=card2+1;card3<tableCards.length; card3++)
+					{
+					test[0] = tablecards[card1];test[1] = tablecards[card2];test[2] = tablecards[card3];
+					if (isASet(test)==true)
+						numberOfSets++;
+			//System.out.println(numberOfSets);
+					}
+				}
+			}
+		System.out.println(numberOfSets);
+		return numberOfSets;
 		
-		
-		
-		
-		
-		count = 1; // TODO delete this later when the function works
-		return count;
+		//return 1;
 	}
 	
 	private boolean isASet(Card[] cards)
@@ -198,6 +213,7 @@ public class Controller extends JFrame   implements MouseListener{
 			if(cards[i]==null)
 			{
 				isASet = false;
+				return isASet;
 			}
 		}
 		//if any variable appears exactly twice
@@ -340,7 +356,10 @@ public class Controller extends JFrame   implements MouseListener{
 				
 			}
 			
-			if(numberOfSelectedCards == cardsToASet) //if the number of cards selected is the number of cards needed for a set.
+			
+			
+			
+			if(numberOfSelectedCards >= cardsToASet) //if the number of cards selected is the number of cards needed for a set.
 			{
 				if(isASet(selectedCards))//if it is a set
 				{
@@ -387,7 +406,7 @@ public class Controller extends JFrame   implements MouseListener{
 					boolean dealing = true;
 					while(dealing)
 					{
-						if (howManySets() == 0) // there are no sets on the table
+						if (howManySets(cardsOnTable) == 0) // there are no sets on the table
 						{
 							if(debugging)
 							{
