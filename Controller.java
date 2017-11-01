@@ -53,7 +53,7 @@ public class Controller extends JFrame   implements MouseListener{
 	Controller()
 	{
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		int width = (int)screenSize.getWidth();
+		int width = (int)screenSize.getWidth()/2;
 		int height = (int)screenSize.getHeight();
 		
         this.setSize(width, height);
@@ -72,21 +72,30 @@ public class Controller extends JFrame   implements MouseListener{
      // register this class as a mouse event listener for the JFrame
         this.addMouseListener(this);
         
-        initialize();
+        start();
+	}
+	
+	private void start()
+	{
+		//TODO start menu
+		
+        initialize(4,3);
         repaint();
 	}
 	
-	private void initialize()
+	private void initialize(int variables, int setSize)
 	{
 		
 		points = 0;
 		numberOfCardsOnTheTable = 0;
 		numberOfSelectedCards = 0;
 		
-		//eventually make these variables dynamic, but for now they are hardcoded in.
-		numberOfVariables = 4;
-		cardsToASet = 3;
-		//for where to draw everything
+		//these are requested from the user in start(), which passes them in to here.
+		numberOfVariables = variables;
+		cardsToASet = setSize;
+		
+		//TODO eventually make these variables dynamic based on the screen size, number of variables, and size of a set, but for now they are hardcoded in.
+		//where to draw everything
 		rows = 6;
 		columns = 6;
 		cardWidth = 75;
@@ -95,7 +104,7 @@ public class Controller extends JFrame   implements MouseListener{
 		firstCardY = 50;
 		cardBufferX = 10;
 		cardBufferY = 10;
-		minimumCards = 9;
+		minimumCards = 12;
 		//dealingStyle = VERTICALLY;
 		dealingStyle = HORIZONTALLY;
 		
@@ -110,6 +119,7 @@ public class Controller extends JFrame   implements MouseListener{
 		foundSets = new Card[myDeck.numberOfCards()];
 		selectedCards = new Card[cardsToASet];
 		cardsOnTable = new Card[rows*columns];
+		
 		//deal cards to the table
         for (int i = 0; (i<cardsOnTable.length && i<minimumCards); i++)
         {
@@ -119,6 +129,9 @@ public class Controller extends JFrame   implements MouseListener{
         }
         
         gameInitialized = true;
+        
+        //make sure that there is at least one set on the table (as well as the minimum number of cards, but that has been satisfied above)
+        dealTilFull();
 	}
 	
 	public void paint(Graphics g)
@@ -149,15 +162,18 @@ public class Controller extends JFrame   implements MouseListener{
 	        	}
 	        }
 	        
-	        //paint all cards in sets already claimed
-	        for( int i = 0 ; i<foundSets.length; i++)
+	        //paint all cards in sets already claimed, in reverse order, at half the size of the regular cards
+	        int c = 0;
+	        for( int i = foundSets.length-1 ; i>=0; i--)
 	        {
 	        	if(foundSets[i]!=null)
 	        	{
-		        	int x = firstCardX + (cardWidth+cardBufferX)*(columns) + (cardWidth+cardBufferX)/2*( 1 + i%cardsToASet + (i/(cardsToASet*rows*2))*(cardsToASet+1) ) ; // starting position + combined width of all the dealt cards + width of one minicard *( 1 (as a buffer space) + how many are already in this row + (how many rows are before this row)*(how many cards are in each of those rows + 1 (as a buffer space))
-		        	int y = firstCardY+(cardHeight+cardBufferY)/2*((i/cardsToASet)%(rows*2));
+		        	//int x = firstCardX + (cardWidth+cardBufferX)*(columns) + (cardWidth+cardBufferX)/2*( 1 + c%cardsToASet + (c/(cardsToASet*rows*2))*(cardsToASet+1) ) ; // starting position + combined width of all the dealt cards + width of one minicard *( 1 (as a buffer space) + how many are already in this row + (how many rows are before this row)*(how many cards are in each of those rows + 1 (as a buffer space))
+	        		int x = firstCardX + (cardWidth+cardBufferX)*(columns) + (cardWidth+cardBufferX)/2*( 1 + (cardsToASet-(c%cardsToASet)) + (c/(cardsToASet*rows*2))*(cardsToASet+1) ) ; // starting position + combined width of all the dealt cards + width of one minicard *( 1 (as a buffer space) + (how many will be in this row - how many are already in this row /*because I am painting them in reverse order but wish them to be drawn across the row in the order they were selected*/) + (how many rows are before this row)*(how many cards are in each of those rows + 1 (as a buffer space))
+		        	int y = firstCardY+(cardHeight+cardBufferY)/2*((c/cardsToASet)%(rows*2));
 		        	
 		        	foundSets[i].draw(g, x, y, cardWidth/2, cardHeight/2);
+		        	c++;
 	        	}
 	        }
 		}
@@ -306,175 +322,181 @@ public class Controller extends JFrame   implements MouseListener{
 			if(debugging)
 				{System.out.println("clicked at position ("+xMousePosition+","+yMousePosition+").");}
 			
-			//determine which card, if any, the user clicked on, and select or deselect it as [relevent]
-			int counter = 0;
-			for(int i = 0; i<cardsOnTable.length; i++)
-			{
-				if(cardsOnTable[i]!=null)
-				{
-					int xPosition;
-					int yPosition;
-					if(dealingStyle == HORIZONTALLY)
-	        		{
-		        		xPosition = firstCardX+(cardWidth+cardBufferX)*(counter%columns);
-		    			yPosition = firstCardY+(cardHeight+cardBufferY)*(counter/columns);
-	        		}
-	        		else //if(dealingStyle == VERTICALLY)
-	    			{
-	    				xPosition = firstCardX+(cardWidth+cardBufferX)*(counter/rows);
-	    				yPosition = firstCardY+(cardHeight+cardBufferY)*(counter%rows);
-	    			}
-					
-					if ((xPosition <= xMousePosition && xMousePosition <= xPosition + cardWidth) 
-							&& (yPosition <= yMousePosition && yMousePosition <= yPosition + cardHeight)
-							&& cardsOnTable[i]!= null)
-					{
-						if(cardsOnTable[i].isSelected()) // card is currently selected, and this click will deselect it
-						{
-							deselect(cardsOnTable[i]);
-						}
-						else //card is currently deselected, and this click will select it
-						{
-							select(cardsOnTable[i]);
-						}
-						repaint();
-						
-						/*if(debugging)
-						{
-							System.out.println("clicked on card #"+i+" (row "+( ( dealingStyle == HORIZONTALLY?(i/columns):(i%rows) ) +1)
-									+", column "+(( dealingStyle == HORIZONTALLY?(i%columns):(i/rows) )+1)+"), "+(cardsOnTable[i].isSelected()?"selecting":"deselecting")+" it.");
-							System.out.println("\n"+numberOfSelectedCards+" card"+(numberOfSelectedCards==1?" is":"s are")+" selected: ");
-							for(int j = 0; j<selectedCards.length;j++)
-							{
-								System.out.println(selectedCards[j] + " ");
-							}
-							System.out.println("");
-						}*/
-					}
-					counter++;
-				}
-				
-			}
-			
-			
-			
+			//determine which card, if any, the user clicked on, and select or deselect it as applicable
+			cardClick(xMousePosition, yMousePosition);
 			
 			if(numberOfSelectedCards >= cardsToASet) //if the number of cards selected is the number of cards needed for a set.
 			{
-				if(isASet(selectedCards))//if it is a set
-				{
-					System.out.println("It's a set!");
-					//give points
-					points++;
-					
-					//add selected cards to foundSets array
-					for(int i = 0; i<selectedCards.length; i++)
-					{
-						boolean added = false;
-						if(selectedCards[i]!=null)//this should always be true, considering where we are, but just in case
-						{
-							for(int count = 0; (!added && count<foundSets.length) ; count++)
-							{
-								if(foundSets[count]==null)
-								{
-									foundSets[count] = selectedCards[i];
-									added = true;
-								}//end if
-							}//end for
-						}//end if
-					}//end for
-					
-					// remove selected cards from table, but not yet from the array selectedCards
-					for(int i = 0; i<selectedCards.length; i++)
-					{
-						boolean removed = false;
-						if(selectedCards[i]!=null)//this should always be true, considering where we are, but just in case
-						{
-							for(int count = 0; (!removed && count<cardsOnTable.length) ; count++)
-							{
-								if(cardsOnTable[count]!=null && cardsOnTable[count].equals(selectedCards[i]))
-								{
-									cardsOnTable[count] = null;
-									removed = true;
-								}//end if
-							}//end for
-							numberOfCardsOnTheTable--;
-						}//end if
-					}//end for
-					
-					
-					boolean dealing = true;
-					while(dealing)
-					{
-						if (howManySets(cardsOnTable) == 0) // there are no sets on the table
-						{
-							if(debugging)
-							{
-								System.out.println("No sets on the table");
-							}
-							if(myDeck.cardsRemaining()) //if there are still more cards in the deck
-							{
-								dealCardsToTable();
-							}
-							else //there are no cards left in the deck
-							{
-								if(debugging)
-								{
-									System.out.println("deck is empty");
-								}
-								//TODO game over
-								dealing = false;
-							}
-						}
-						else // there is at least one set on the table
-						{
-							if(numberOfCardsOnTheTable<minimumCards)// if there are less cards on the table than we want there to be cards on the table
-							{
-								if(debugging)
-								{
-									System.out.println(numberOfCardsOnTheTable+" cards on the table: not enough cards on the table");
-								}
-								
-								if(myDeck.cardsRemaining()) //if there are still more cards in the deck
-								{
-									dealCardsToTable();
-								}
-								else //no cards left in the deck
-								{
-									if(debugging)
-									{
-										System.out.println("deck is empty");
-									}
-									dealing = false;
-								}
-								if(debugging)
-								{
-									System.out.println(numberOfCardsOnTheTable+" cards on the table.");
-								}
-							}
-							else //there are enough cards on the table
-							{
-								dealing = false;
-							}
-						}//end else
-					}//end while
-				}//end if
-				else //it is not a set
-				{
-					//scold, maybe deduct points
-					System.out.println("Sorry, not a set.");//TODO change to something on the JFrame (maybe turn them all red for a moment?)
-				}
-				
-				//empty selectedCards
-				for(int i = 0; i<selectedCards.length; i++)
-				{
-					if(selectedCards[i]!=null)//this should always be true, considering where we are, but just in case
-					{
-						deselect(selectedCards[i]);
-					}
-				}
+				checkSet();
 			}
 		}
+	}//end mouse event
+	
+	public void cardClick(int xMousePosition, int yMousePosition)
+	{
+		//determine which card, if any, the user clicked on, and select or deselect it as applicable
+		int counter = 0;
+		for(int i = 0; i<cardsOnTable.length; i++)
+		{
+			if(cardsOnTable[i]!=null)
+			{
+				int xPosition;
+				int yPosition;
+				if(dealingStyle == HORIZONTALLY)
+        		{
+	        		xPosition = firstCardX+(cardWidth+cardBufferX)*(counter%columns);
+	    			yPosition = firstCardY+(cardHeight+cardBufferY)*(counter/columns);
+        		}
+        		else //if(dealingStyle == VERTICALLY)
+    			{
+    				xPosition = firstCardX+(cardWidth+cardBufferX)*(counter/rows);
+    				yPosition = firstCardY+(cardHeight+cardBufferY)*(counter%rows);
+    			}
+				
+				if ((xPosition <= xMousePosition && xMousePosition <= xPosition + cardWidth) 
+						&& (yPosition <= yMousePosition && yMousePosition <= yPosition + cardHeight)
+						&& cardsOnTable[i]!= null)
+				{
+					if(cardsOnTable[i].isSelected()) // card is currently selected, and this click will deselect it
+					{
+						deselect(cardsOnTable[i]);
+					}
+					else //card is currently deselected, and this click will select it
+					{
+						select(cardsOnTable[i]);
+					}
+					repaint();
+				}
+				counter++;
+			}
+		}
+	}//end cardClick
+	
+	public void checkSet()
+	{
+		if(isASet(selectedCards))//if it is a set
+		{
+			System.out.println("It's a set!");//TODO make some sort of announcement on screen
+			//give points
+			points++;
+			
+			//add selected cards to foundSets array
+			for(int i = 0; i<selectedCards.length; i++)
+			{
+				boolean added = false;
+				if(selectedCards[i]!=null)//this should always be true, considering where we are, but just in case
+				{
+					for(int count = 0; (!added && count<foundSets.length) ; count++)
+					{
+						if(foundSets[count]==null)
+						{
+							foundSets[count] = selectedCards[i];
+							added = true;
+						}//end if
+					}//end for
+				}//end if
+			}//end for
+			
+			// remove selected cards from table, but not yet from the array selectedCards
+			for(int i = 0; i<selectedCards.length; i++)
+			{
+				boolean removed = false;
+				if(selectedCards[i]!=null)//this should always be true, considering where we are, but just in case
+				{
+					for(int count = 0; (!removed && count<cardsOnTable.length) ; count++)
+					{
+						if(cardsOnTable[count]!=null && cardsOnTable[count].equals(selectedCards[i]))
+						{
+							cardsOnTable[count] = null;
+							removed = true;
+						}//end if
+					}//end for
+					numberOfCardsOnTheTable--;
+				}//end if
+			}//end for
+			
+			dealTilFull();
+			
+		}//end if
+		else //it is not a set
+		{
+			//scold, maybe deduct points
+			System.out.println("Sorry, not a set.");//TODO change to something on the JFrame (maybe turn them all red for a moment?)
+		}
+		
+		//empty selectedCards
+		for(int i = 0; i<selectedCards.length; i++)
+		{
+			if(selectedCards[i]!=null)//this should always be true, considering where we are, but just in case
+			{
+				deselect(selectedCards[i]);
+			}
+		}
+	}//end checkSet
+	
+	/**
+	 * public void dealTilFull()
+	 * This method will deal cards onto the table until there is at least one set on the table and 
+	 * there are at least minimumCards on the table, or until there are no cards left in the
+	 * deck, whichever comes first.
+	 */
+	public void dealTilFull()
+	{
+		boolean dealing = true;
+		while(dealing)
+		{
+			if (howManySets(cardsOnTable) == 0) // there are no sets on the table
+			{
+				if(debugging)
+				{
+					System.out.println("No sets on the table");
+				}
+				if(myDeck.cardsRemaining()) //if there are still more cards in the deck
+				{
+					dealCardsToTable();
+				}
+				else //there are no cards left in the deck
+				{
+					if(debugging)
+					{
+						System.out.println("deck is empty");
+					}
+					//TODO game over
+					dealing = false;
+				}
+			}
+			else // there is at least one set on the table
+			{
+				if(numberOfCardsOnTheTable<minimumCards)// if there are less cards on the table than we want there to be cards on the table
+				{
+					if(debugging)
+					{
+						System.out.println(numberOfCardsOnTheTable+" cards on the table: not enough cards on the table");
+					}
+					
+					if(myDeck.cardsRemaining()) //if there are still more cards in the deck
+					{
+						dealCardsToTable();
+					}
+					else //no cards left in the deck
+					{
+						if(debugging)
+						{
+							System.out.println("deck is empty");
+						}
+						dealing = false;
+					}
+					if(debugging)
+					{
+						System.out.println(numberOfCardsOnTheTable+" cards on the table.");
+					}
+				}
+				else //there are enough cards on the table
+				{
+					dealing = false;
+				}
+			}//end else
+		}//end while
 	}
 	
 	public void mouseEntered(MouseEvent arg0) {
