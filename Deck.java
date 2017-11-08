@@ -19,9 +19,45 @@ public class Deck {
 		initialize(numOfVariables, cardsInASet);
 	}
 	
+	/*
+	 * 
+	 * @param numOfVariables
+	 * @param cardsInASet
+	 * @param variables
+	 * this array should be size [numOfVariables][cardsInASet]
+	 */
+	Deck(int numOfVariables, int cardsInASet, int[][]variables)// a deck with a certain size and specifically defined variables, not just the default first few. 
+	{
+		if(variables.length!=numOfVariables)
+		{
+			throw new IllegalArgumentException("variables array is not the expected size");//TODO later make this go to a separate thingy so they can pick out a few variables
+		}
+		for(int i  = 0; i<variables.length; i++)
+		{
+			if(/*variables[i]!=null &&*/ variables[i].length!=cardsInASet)
+			{
+				throw new IllegalArgumentException("variables array is not the expected size");
+			}
+		}
+		
+		NUMBER_OF_CARDS = (int)Math.pow(cardsInASet,numOfVariables);
+		deck = new Card[NUMBER_OF_CARDS];
+		
+		for(int i = 0 ; i<NUMBER_OF_CARDS ; i++)
+		{
+			int[] v = new int[numOfVariables];
+			for(int j = 0; j<numOfVariables;j++)
+			{
+				v[j] = variables[j][(i/(int)Math.pow(cardsInASet,j))%cardsInASet];
+			}
+			deck[i] = new Card(numOfVariables,cardsInASet,v);
+		}
+		
+	}
+	
 	private void initialize(int numOfVariables, int cardsInASet)
 	{
-		NUMBER_OF_CARDS = (int)Math.pow(cardsInASet,numOfVariables);
+		NUMBER_OF_CARDS = (int)Math.pow(cardsInASet,numOfVariables); // cardsInASet raised to numOfVariables
 		deck = new Card[NUMBER_OF_CARDS];
 		
 		for(int i = 0 ; i<NUMBER_OF_CARDS ; i++)
@@ -30,6 +66,7 @@ public class Deck {
 			for(int j = 0; j<numOfVariables; j++)
 			{
 				variables[j]= (i/(int)Math.pow(cardsInASet,j))%cardsInASet;
+				
 				//if the variable is the number of tokens on the card
 				if(j==Card.NUMBER)
 				{

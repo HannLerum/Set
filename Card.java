@@ -1,4 +1,3 @@
-// The existential dread that sets in as code continually kicks up the same errors is matched only by the sinking feeling ascociated with reading Trump's twitter
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -26,11 +25,11 @@ public class Card {
   public static final int SHAPE = 2;
   public static final int FILL = 3;
   public static final int BORDER = 4;
-  public static final int variable6 = 5;
   //ideas: border thickness, shadow size, shape of card
   //NUMBER must be a smaller value than SHAPE, which must be a smaller value than FILL
   
-  //to give a user an idea of what they can request
+  //to give a user an idea of what they can request (All of these were manually counted)
+  public static final int numberOfVariablesAvailable = 5;
   public static final int numberOfColorsAvailable = 6;
   public static final int numberOfShapesAvailable = 7;
   public static final int numberOfFillsAvailable = 4;
@@ -61,16 +60,11 @@ public class Card {
 	final Color blue = new Color(0,0,255);
 	final Color purple = new Color(128,0,128);
 	
-	Color[][] colorschemes = {
-			{green, blue, yellow, purple, red, orange},
-			{red, orange, yellow, green, blue, purple}
-	};
-	int scheme;
+	public Color[] colors = {red, orange, yellow, green, blue, purple};
   
   public Card()
   {
 	  cardsInASet = 3;
-	  scheme = 0;
 	  int numberOfVariables = 4;
 	  variables = new int[numberOfVariables];
 	  for(int i =0; i<numberOfVariables; i++)
@@ -90,9 +84,8 @@ public class Card {
   public Card(int numberOfVariables,int numberOfCardstoaSet,int[] variables, int colorScheme)
   {
 	  cardsInASet = numberOfCardstoaSet;
-	  scheme = (colorScheme<colorschemes.length?(colorScheme):(colorschemes.length-1)); //if the colorScheme is one that is included in the colorschemes array, then use that. Else use the last scheme in the colorschemes array
 	  
-	  if(variables.length!=numberOfVariables) // if the number of variables given is not the number of variables you said you would give
+	  if(variables.length<numberOfVariables) // if the number of variables given is less than the number of variables you said you would give
 	  {
 		  throw new IllegalArgumentException("You must give an array of variables consistent with the number of variables stated.");
 	  }
@@ -106,12 +99,12 @@ public class Card {
 	  this.variables = new int[numberOfVariables];
 	  for(int i =0; i<numberOfVariables; i++)
 	  {
-		  if( ((i==NUMBER&&variables[i]<cardsInASet+1) || variables[i]<variablesAllowed[i]) && variables[i]>=0 )
+		  if( ((i==NUMBER && variables[i]<cardsInASet+1 && variables[i]>0) || variables[i]<variablesAllowed[i]) && variables[i]>=0 )
 		  {
 			  this.variables[i]=variables[i];
 		  }
 		  else
-			  {throw new IllegalArgumentException("variable is out of bounds");}
+			  {throw new IllegalArgumentException("variable "+ i +"("+variables[i]+") is out of bounds");}
 	  }
 	  if(variables.length>NUMBER)
 	  {
@@ -156,7 +149,7 @@ public class Card {
 	  g2.setStroke(thickStroke);
 	  
 	  Color backgroundColor = (selected?Color.black:Color.gray);
-	  Color outlineColor = variables.length>BORDER?(colorschemes[scheme][variables[BORDER]]):(selected?Color.gray:Color.black);
+	  Color outlineColor = variables.length>BORDER?(colors[variables[BORDER]]):(selected?Color.gray:Color.black);
 	  
 	  g.setColor(backgroundColor);
 	  g.fillRoundRect(x, y, width, height, 10, 10);//fill card
@@ -164,7 +157,7 @@ public class Card {
 	  g.drawRoundRect(x, y, width, height, 10, 10);//draw border of card
 	  g2.setStroke(defaultStroke);
 	  
-	  g.setColor((variables.length>COLOR)?colorschemes[0][variables[COLOR]]:(selected?Color.gray:Color.black));
+	  g.setColor((variables.length>COLOR)?colors[variables[COLOR]]:(selected?Color.gray:Color.black));
 	  
 	  if(variables.length>SHAPE)//if the variables includes shape
 	  {
@@ -603,31 +596,31 @@ public class Card {
 	  String shape = "";
 	  String fill = "";
 	  
-	  if(colorschemes[scheme][variables[COLOR]].equals(red))
+	  if(colors[variables[COLOR]].equals(red))
 	  {
 		  color = "red";
 	  }
-	  else if(colorschemes[scheme][variables[COLOR]].equals(orange))
+	  else if(colors[variables[COLOR]].equals(orange))
 	  {
 		  color = "orange";
 	  }
-	  else if(colorschemes[scheme][variables[COLOR]].equals(yellow))
+	  else if(colors[variables[COLOR]].equals(yellow))
 	  {
 		  color = "yellow";
 	  }
-	  else if(colorschemes[scheme][variables[COLOR]].equals(green))
+	  else if(colors[variables[COLOR]].equals(green))
 	  {
 		  color = "green";
 	  }
-	  else if(colorschemes[scheme][variables[COLOR]].equals(blue))
+	  else if(colors[variables[COLOR]].equals(blue))
 	  {
 		  color = "blue";
 	  }
-	  else if(colorschemes[scheme][variables[COLOR]].equals(purple))
+	  else if(colors[variables[COLOR]].equals(purple))
 	  {
 		  color = "purple";
 	  }
-	  else //it is not any of the defined colors
+	  else //it is not any of the defined colors (I don't expect this to happen)
 	  {
 		  color = ("color "+variables[COLOR]);
 	  }
