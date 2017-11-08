@@ -84,13 +84,14 @@ public class Controller extends JFrame   implements MouseListener{
 		int setSize = 3; // 3, 4, or 5
 		
 		int[][] v = new int[variables][setSize];
-		//TOOD have the user choose whether to go with the default or to customize their deck
+		
+		//TODO have the user choose whether to go with the default or to customize their deck
 		boolean custom = true;
 		
 		if(custom)
 		{
 			//TODO have the user select options for each variable (for example: if there are three cards to a set, the user will now select three colors, three shapes, three shadings, etc.)
-			
+			//(you can call things such as Card.SQUARE and other public Card variables as a reference)
 			
 		}
 		else //default
