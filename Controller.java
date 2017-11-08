@@ -90,8 +90,11 @@ public class Controller extends JFrame   implements MouseListener{
 		
 		if(custom)
 		{
-			//TODO have the user select options for each variable (for example: if there are three cards to a set, the user will now select three colors, three shapes, three shadings, etc.)
-			//(you can call things such as Card.SQUARE and other public Card variables as a reference)
+			//TODO
+			// have the user select options for each variable except for numbers, which are automatically assigned based on how many cards there are to a set
+			// (for example: if there are three cards to a set, the user will now select three colors, three shapes, three shadings, etc.)
+			// The selected variables should be represented in the v array as integers.
+			// (you can call things such as Card.SQUARE, Card.colors[i] and other public Card variables as a reference)
 			
 		}
 		else //default

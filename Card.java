@@ -53,14 +53,14 @@ public class Card {
   public static final int fill5 = 4;
   
   
-	final Color red = new Color(255,0,0);
-	final Color orange = new Color(255,140,0);
-	final Color yellow = new Color(204,204,0);
-	final Color green = new Color(0,255,0);
-	final Color blue = new Color(0,0,255);
-	final Color purple = new Color(128,0,128);
+	static final Color red = new Color(255,0,0);
+	static final Color orange = new Color(255,140,0);
+	static final Color yellow = new Color(204,204,0);
+	static final Color green = new Color(0,255,0);
+	static final Color blue = new Color(0,0,255);
+	static final Color purple = new Color(128,0,128);
 	
-	public Color[] colors = {red, orange, yellow, green, blue, purple};
+	public static Color[] colors = {red, orange, yellow, green, blue, purple};
   
   public Card()
   {
