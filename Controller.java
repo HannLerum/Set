@@ -86,7 +86,7 @@ public class Controller extends JFrame   implements MouseListener{
 		int[][] v = new int[variables][setSize];
 		
 		//TODO have the user choose whether to go with the default or to customize their deck
-		boolean custom = true;
+		boolean custom = false;
 		
 		if(custom)
 		{
@@ -100,8 +100,13 @@ public class Controller extends JFrame   implements MouseListener{
 		else //default
 		{
 			//TODO set v to the default values
-			
-			
+			for(int i = 0; i<variables; i++)
+			{
+				for(int j = 0; j<setSize; j++)
+				{
+					v[i][j]= (i==Card.NUMBER?(j+1):(j)); //if this is the NUMBER variable, set this to j+1, else set this to j. That way all variables but NUMBER go from 0 to setSize-1 and NUMBER goes from 1 to setSize
+				}
+			}
 		}
 		
 		
@@ -129,9 +134,16 @@ public class Controller extends JFrame   implements MouseListener{
 		firstCardY = 50;
 		cardBufferX = 10;
 		cardBufferY = 10;
-		minimumCards = 12;
 		//dealingStyle = VERTICALLY;
 		dealingStyle = HORIZONTALLY;
+		if(dealingStyle == VERTICALLY)
+		{
+			minimumCards = rows*(columns-2);
+		}
+		else
+		{
+			minimumCards = (rows-2)*columns;
+		}
 		
 		if(minimumCards>rows*columns)
 		{

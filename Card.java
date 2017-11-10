@@ -58,7 +58,7 @@ public class Card {
   public static final int numberOfVariablesAvailable = 5;
   public static final int numberOfColorsAvailable = colors.length;
   public static final int numberOfShapesAvailable = 7;
-  public static final int numberOfFillsAvailable = 4;
+  public static final int numberOfFillsAvailable = 5;
   public static final int numberOfBorderColorsAvailable = colors.length;
   
   //shape
@@ -72,11 +72,11 @@ public class Card {
   final int STAR = 20;
   final int LIGHTNING_BOLT = 21;
   //fill
-  public static final int OUTLINE = 0;
-  public static final int STRIPED = 1;
+  public static final int OUTLINE = 1;
+  public static final int STRIPED = 4;
   public static final int SOLID = 2;
   public static final int GRADIENT = 3;
-  public static final int fill5 = 4;
+  public static final int THICK_OUTLINE = 0;
   
 	
   public Card()
@@ -121,7 +121,7 @@ public class Card {
 			  this.variables[i]=variables[i];
 		  }
 		  else
-			  {throw new IllegalArgumentException("variable "+ i +"("+variables[i]+") is out of bounds");}
+			  {throw new IllegalArgumentException("variable "+ i +" ("+variables[i]+") is out of bounds");}
 	  }
 	  if(variables.length>NUMBER)
 	  {
@@ -212,6 +212,12 @@ public class Card {
 				            g2d.setPaint(gp);
 				            g2d.fillRect(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);
 					  }
+					  if(variables[FILL]==THICK_OUTLINE)
+					  {
+						  g2.setStroke(thickStroke);
+						  g.drawRect(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);//outline
+						  g2.setStroke(defaultStroke);
+					  }
 				  }
 				  else // fill is not a variable
 				  {
@@ -247,6 +253,13 @@ public class Card {
 				          g2d.setPaint(gp);
 				          g2d.fillPolygon(xPoints, yPoints, 3);
 					  }
+					  if(variables[FILL]==THICK_OUTLINE)
+					  {
+						  g2.setStroke(thickStroke);
+						  g.drawPolygon(xPoints, yPoints, 3);//outline
+						  g2.setStroke(defaultStroke);
+					  }
+					  
 				  }
 				  else //fill is not a variable
 				  {
@@ -279,6 +292,12 @@ public class Card {
 						  	Graphics2D g2d = (Graphics2D) g;
 				            g2d.setPaint(gp);
 				            g2d.fillOval(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);
+					  }
+					  if(variables[FILL]==THICK_OUTLINE)
+					  {
+						  g2.setStroke(thickStroke);
+						  g.drawOval(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);//outline
+						  g2.setStroke(defaultStroke);
 					  }
 				  }
 				  else //fill is not a variable
@@ -321,6 +340,12 @@ public class Card {
 				          g2d.setPaint(gp);
 				          g2d.fillPolygon(xPoints, yPoints, 4);
 					  }
+					  if(variables[FILL]==THICK_OUTLINE)
+					  {
+						  g2.setStroke(thickStroke);
+						  g.drawPolygon(xPoints, yPoints, 4);
+						  g2.setStroke(defaultStroke);
+					  }
 				  }
 				  else // fill is not a variable
 				  {
@@ -357,6 +382,12 @@ public class Card {
 				          Graphics2D g2d = (Graphics2D) g;
 				          g2d.setPaint(gp);
 				          g2d.fillPolygon(xPoints, yPoints, 4);
+					  }
+					  if(variables[FILL]==THICK_OUTLINE)
+					  {
+						  g2.setStroke(thickStroke);
+						  g.drawPolygon(xPoints, yPoints, 4);
+						  g2.setStroke(defaultStroke);
 					  }
 				  }
 				  else // fill is not a variable
@@ -397,6 +428,12 @@ public class Card {
 				          Graphics2D g2d = (Graphics2D) g;
 				          g2d.setPaint(gp);
 				          g2d.fillPolygon(xPoints, yPoints, 4);
+					  }
+					  if(variables[FILL]==THICK_OUTLINE)
+					  {
+						  g2.setStroke(thickStroke);
+						  g.drawPolygon(xPoints, yPoints, 4);
+						  g2.setStroke(defaultStroke);
 					  }
 				  }
 				  else // fill is not a variable
@@ -476,6 +513,19 @@ public class Card {
 						  }
 				          g.setColor(temp);
 					  }
+					  if(variables[FILL]==THICK_OUTLINE)
+					  {
+						  g2.setStroke(thickStroke);
+						  for(int triangle = 0; triangle < 3; triangle++)
+						  {
+							  g.drawPolygon(xPoints[triangle], yPoints[triangle], 3);
+						  }
+						  g.setColor(backgroundColor);
+						  g.fillPolygon(xPoints[2], yPoints[2], 3);
+						  g.setColor(temp);
+						  g.drawPolygon(xPoints[2], yPoints[2], 3);
+						  g2.setStroke(defaultStroke);
+					  }
 				  }
 				  else // fill is not a variable
 				  {
@@ -514,6 +564,12 @@ public class Card {
 				          g2d.setPaint(gp);
 				          g2d.fillPolygon(xPoints, yPoints, 5);
 					  }
+					  if(variables[FILL]==THICK_OUTLINE)
+					  {
+						  g2.setStroke(thickStroke);
+						  g.drawPolygon(xPoints, yPoints, 5);
+						  g2.setStroke(defaultStroke);
+					  }
 				  }
 				  else // fill is not a variable
 				  {
@@ -545,6 +601,12 @@ public class Card {
 				          Graphics2D g2d = (Graphics2D) g;
 				          g2d.setPaint(gp);
 				          g2d.fillPolygon(xPoints, yPoints, 6);
+					  }
+					  if(variables[FILL]==THICK_OUTLINE)
+					  {
+						  g2.setStroke(thickStroke);
+						  g.drawPolygon(xPoints, yPoints, 6);
+						  g2.setStroke(defaultStroke);
 					  }
 				  }
 				  else // fill is not a variable
