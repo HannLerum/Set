@@ -19,6 +19,32 @@ public class Card {
   boolean selected;
   boolean initialized = false;
   
+  	static final Color red = new Color(255,0,0);
+	static final Color orange = new Color(255,140,0);
+	static final Color yellow = new Color(255,215,0);
+	static final Color green = new Color(0,255,0);
+	static final Color blue = new Color(0,0,255);
+	static final Color purple = new Color(128,0,128);
+	static final Color pink = new Color(255,192,203);
+	static final Color hotPink = new Color(255,20,147);
+	static final Color maroon = new Color(128,0,0);
+	static final Color brown = new Color(139,69,19);
+	static final Color green_gray = new Color(47,79,79);
+	static final Color darkgreen = new Color(0,100,0);
+	static final Color olive = new Color(128,128,0);
+	static final Color greenyellow = new Color(173,255,47);
+	static final Color teal = new Color(0,128,128);
+	static final Color cyan = new Color(0,255,255);
+	static final Color turqoise = new Color(64,224,208);
+	static final Color slateblue = new Color(106,90,205);
+	static final Color fuchsia = new Color(255,0,255);
+	static final Color blueviolet = new Color(138,43,226);
+	static final Color tan = new Color(210,180,140);
+	static final Color goldenrod = new Color(218,165,32);
+	
+	public static final Color[] colors = {red, orange, yellow, green, blue, purple,pink,hotPink,maroon,brown,green_gray,darkgreen,olive,greenyellow,teal,cyan,turqoise,slateblue,fuchsia,blueviolet,tan,goldenrod};
+
+  
   //define variables
   public static final int COLOR = 0;
   public static final int NUMBER = 1;
@@ -28,12 +54,12 @@ public class Card {
   //ideas: border thickness, shadow size, shape of card
   //NUMBER must be a smaller value than SHAPE, which must be a smaller value than FILL
   
-  //to give a user an idea of what they can request (All of these were manually counted)
+  //to give a user an idea of what they can request (All of these were manually counted, except for the colors)
   public static final int numberOfVariablesAvailable = 5;
-  public static final int numberOfColorsAvailable = 6;
+  public static final int numberOfColorsAvailable = colors.length;
   public static final int numberOfShapesAvailable = 7;
   public static final int numberOfFillsAvailable = 4;
-  public static final int numberOfBorderColorsAvailable = 6;
+  public static final int numberOfBorderColorsAvailable = colors.length;
   
   //shape
   public static final int MOUNTAINS = 0;
@@ -52,16 +78,7 @@ public class Card {
   public static final int GRADIENT = 3;
   public static final int fill5 = 4;
   
-  
-	static final Color red = new Color(255,0,0);
-	static final Color orange = new Color(255,140,0);
-	static final Color yellow = new Color(204,204,0);
-	static final Color green = new Color(0,255,0);
-	static final Color blue = new Color(0,0,255);
-	static final Color purple = new Color(128,0,128);
 	
-	public static Color[] colors = {red, orange, yellow, green, blue, purple};
-  
   public Card()
   {
 	  cardsInASet = 3;
