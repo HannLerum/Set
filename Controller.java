@@ -99,7 +99,6 @@ public class Controller extends JFrame   implements MouseListener{
 		}
 		else //default
 		{
-			//TODO set v to the default values
 			for(int i = 0; i<variables; i++)
 			{
 				for(int j = 0; j<setSize; j++)
