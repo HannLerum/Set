@@ -44,22 +44,20 @@ public class Card {
 	
 	public static final Color[] colors = {red, orange, yellow, green, blue, purple,pink,hotPink,maroon,brown,green_gray,darkgreen,olive,greenyellow,teal,cyan,turqoise,slateblue,fuchsia,blueviolet,tan,goldenrod};
 
-  
-  //define variables
-  public static final int COLOR = 0;
-  public static final int NUMBER = 1;
-  public static final int SHAPE = 2;
-  public static final int FILL = 3;
-  public static final int BORDER = 4;
-  //ideas: border thickness, shadow size, shape of card
-  //NUMBER must be a smaller value than SHAPE, which must be a smaller value than FILL
-  
   //to give a user an idea of what they can request (All of these were manually counted, except for the colors)
   public static final int numberOfVariablesAvailable = 5;
   public static final int numberOfColorsAvailable = colors.length;
   public static final int numberOfShapesAvailable = 7;
   public static final int numberOfFillsAvailable = 5;
   public static final int numberOfBorderColorsAvailable = colors.length;
+  
+  //define variables
+  public static final int COLOR = 4;
+  public static final int NUMBER = 0;
+  public static final int SHAPE = 1;
+  public static final int FILL = 2;
+  public static final int BORDER = 3;
+  //SHAPE must be a smaller value than FILL (the others can be rearranged as you like) //TODO somehow make it so that these can be rearranged or chosen or whatever
   
   //shape
   public static final int MOUNTAINS = 0;
@@ -72,11 +70,11 @@ public class Card {
   final int STAR = 20;
   final int LIGHTNING_BOLT = 21;
   //fill
-  public static final int OUTLINE = 1;
-  public static final int STRIPED = 4;
+  public static final int OUTLINE = 0;
+  public static final int STRIPED = 1;
   public static final int SOLID = 2;
   public static final int GRADIENT = 3;
-  public static final int THICK_OUTLINE = 0;
+  public static final int THICK_OUTLINE = 4;
   
 	
   public Card()
@@ -158,22 +156,27 @@ public class Card {
 	  if(!initialized)
 	  	{throw new IllegalArgumentException("card is not initialized");}
 	  
+	  //get the current variables so that we can reset them to this later
 	  Color currentColor = g.getColor();
 	  Graphics2D g2 = (Graphics2D) g;
 	  Stroke defaultStroke = g2.getStroke();
+	  
+	  //create some variables that we're gonna call through the rest of this method
 	  Stroke thickStroke = new BasicStroke(width/15);
+	  Color backgroundColor = (selected?Color.black:Color.gray); //if the card is selected, the background is black; else, gray
+	  Color outlineColor = variables.length>BORDER?(colors[variables[BORDER]]):(selected?Color.gray:Color.black); //if BORDER is a variable, the outline is that color. Else, if the card is selected, gray, else, black
 	  
+	  //draw blank card
 	  g2.setStroke(thickStroke);
-	  
-	  Color backgroundColor = (selected?Color.black:Color.gray);
-	  Color outlineColor = variables.length>BORDER?(colors[variables[BORDER]]):(selected?Color.gray:Color.black);
-	  
 	  g.setColor(backgroundColor);
 	  g.fillRoundRect(x, y, width, height, 10, 10);//fill card
 	  g.setColor(outlineColor);
 	  g.drawRoundRect(x, y, width, height, 10, 10);//draw border of card
+	  
+	  //return to previous stroke
 	  g2.setStroke(defaultStroke);
 	  
+	  //If COLOR is a variable, set g to draw the shapes with that color. Else, if the card is selected, draw the shapes in gray; else, black.
 	  g.setColor((variables.length>COLOR)?colors[variables[COLOR]]:(selected?Color.gray:Color.black));
 	  
 	  if(variables.length>SHAPE)//if the variables includes shape
@@ -182,10 +185,12 @@ public class Card {
 		  int yBuffer = 10;
 		  int xBuffer = 10;
 		  
-		  int h = (height-(2*yBuffer))/variables[NUMBER]-yBuffer/2;
+		  int number = (variables.length>NUMBER?variables[NUMBER]:1); //if number is one of the variables given, use the number given. Else, use 1.
+		  
+		  int h = (height-(2*yBuffer))/number-yBuffer/2;
 		  int w = width-2*xBuffer;
 		  
-		  for(int i =0; i<variables[NUMBER];i++)
+		  for(int i =0; i<number ; i++)
 		  {
 			  if(variables[SHAPE]==SQUARE)
 			  {
@@ -622,16 +627,14 @@ public class Card {
 	  {
 		  g.fillRoundRect(x+10, y+10, width-20, height-20, 10, 10);//fill card with color
 		  
-		  
 	  }
 	  if(variables.length>NUMBER)
 	  {
-		  if(selected)
-		  {g.setColor(Color.WHITE);}
-		  else
-		  { g.setColor(Color.BLACK);}
-		  g.setFont(new Font(null, Font.CENTER_BASELINE, 20) );
-		  g.drawString(""+variables[NUMBER], x+10, y+30);
+		  Font current = g.getFont();
+		  g.setColor(Color.WHITE);
+		  g.setFont(new Font(null, Font.CENTER_BASELINE, height/7) );
+		  g.drawString(""+variables[NUMBER], x+width/7, y+height/7);
+		  g.setFont(current);
 	  }
 	  g.setColor(currentColor);
   }
