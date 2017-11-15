@@ -79,13 +79,42 @@ public class Controller extends JFrame   implements MouseListener{
 	{
 		//TODO start menu
 		
-        initialize(4,3);
+		//TODO have the user choose how many variables and how many cards to a set
+		int variables = 4; // up to Card.numberOfVariablesAvailable
+		int setSize = 3; // 3, 4, or 5
+		
+		int[][] v = new int[variables][setSize];
+		
+		//TODO have the user choose whether to go with the default or to customize their deck
+		boolean custom = false;
+		
+		if(custom)
+		{
+			//TODO
+			// have the user select options for each variable except for numbers, which are automatically assigned based on how many cards there are to a set
+			// (for example: if there are three cards to a set, the user will now select three colors, three shapes, three shadings, etc.)
+			// The selected variables should be represented in the v array as integers.
+			// (you can call things such as Card.SQUARE, Card.colors[i] and other public Card variables as a reference)
+			
+		}
+		else //default
+		{
+			for(int i = 0; i<variables; i++)
+			{
+				for(int j = 0; j<setSize; j++)
+				{
+					v[i][j]= (i==Card.NUMBER?(j+1):(j)); //if this is the NUMBER variable, set this to j+1, else set this to j. That way all variables but NUMBER go from 0 to setSize-1 and NUMBER goes from 1 to setSize
+				}
+			}
+		}
+		
+		
+        initialize(variables,setSize,v);
         repaint();
 	}
 	
-	private void initialize(int variables, int setSize)
+	private void initialize(int variables, int setSize, int[][] v)
 	{
-		
 		points = 0;
 		numberOfCardsOnTheTable = 0;
 		numberOfSelectedCards = 0;
@@ -104,9 +133,16 @@ public class Controller extends JFrame   implements MouseListener{
 		firstCardY = 50;
 		cardBufferX = 10;
 		cardBufferY = 10;
-		minimumCards = 12;
 		//dealingStyle = VERTICALLY;
 		dealingStyle = HORIZONTALLY;
+		if(dealingStyle == VERTICALLY)
+		{
+			minimumCards = rows*(columns-2);
+		}
+		else
+		{
+			minimumCards = (rows-2)*columns;
+		}
 		
 		if(minimumCards>rows*columns)
 		{
@@ -114,7 +150,7 @@ public class Controller extends JFrame   implements MouseListener{
 		}
 		
 		//initialize deck and all arrays
-		myDeck = new Deck(numberOfVariables,cardsToASet);
+		myDeck = new Deck(numberOfVariables,cardsToASet,v);
 		//myDeck.shuffle();
 		foundSets = new Card[myDeck.numberOfCards()];
 		selectedCards = new Card[cardsToASet];
@@ -219,8 +255,8 @@ public class Controller extends JFrame   implements MouseListener{
 					{
 					test[0] = tablecards[card1];test[1] = tablecards[card2];test[2] = tablecards[card3];
 					if (isASet(test)==true)
-						numberOfSets++;
-			//System.out.println(numberOfSets);
+						{numberOfSets++;}
+					//System.out.println(numberOfSets);
 					}
 				}
 			}*/
@@ -250,11 +286,12 @@ public class Controller extends JFrame   implements MouseListener{
 				return isASet;
 			}
 		}
-		//if any variable appears exactly twice
+		//if any variable appears at least twice but not on every card
 		for(int i = 0; i<numberOfVariables ; i++)//for each variable
 		{
-			int[] v = new int[cardsToASet];
-			for(int k = 0 ; k<cardsToASet ; k ++)
+			//int[] v = new int[cardsToASet];
+			int[] v = new int[7]; // 7 is the numberOfShapes available, which is currently our variable with the most options
+			for(int k = 0 ; k<v.length ; k ++)
 			{
 				v[k] = 0;
 			}
@@ -265,10 +302,17 @@ public class Controller extends JFrame   implements MouseListener{
 			
 			for(int k = 0 ; k<cardsToASet ; k ++)
 			{
-				if(v[k]==2)
+				if( v[k]>=2 && v[k]!=cardsToASet )
 				{
 					isASet = false;
 				}
+				
+				/* logically equivalent but a LITTLE messier
+				 * if( ! ((v[k]<2) || v[k]==cardsToASet) )
+				 * {
+				 * 		isASet = false;
+				 * }
+				 */
 			}
 		}
 		

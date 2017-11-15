@@ -1,4 +1,3 @@
-// The existential dread that sets in as code continually kicks up the same errors is matched only by the sinking feeling ascociated with reading Trump's twitter
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -13,28 +12,53 @@ import javax.swing.JLabel;
 import javax.swing.JPanel; // for JPanel
 import javax.swing.border.EmptyBorder;
 
-
-
 public class Card {
   
   int cardsInASet;
   int[] variables;
   boolean selected;
-  boolean initialized;
+  boolean initialized = false;
+  
+  	static final Color red = new Color(255,0,0);
+	static final Color orange = new Color(255,140,0);
+	static final Color yellow = new Color(255,215,0);
+	static final Color green = new Color(0,255,0);
+	static final Color blue = new Color(0,0,255);
+	static final Color purple = new Color(128,0,128);
+	static final Color pink = new Color(255,192,203);
+	static final Color hotPink = new Color(255,20,147);
+	static final Color maroon = new Color(128,0,0);
+	static final Color brown = new Color(139,69,19);
+	static final Color green_gray = new Color(47,79,79);
+	static final Color darkgreen = new Color(0,100,0);
+	static final Color olive = new Color(128,128,0);
+	static final Color greenyellow = new Color(173,255,47);
+	static final Color teal = new Color(0,128,128);
+	static final Color cyan = new Color(0,255,255);
+	static final Color turqoise = new Color(64,224,208);
+	static final Color slateblue = new Color(106,90,205);
+	static final Color fuchsia = new Color(255,0,255);
+	static final Color blueviolet = new Color(138,43,226);
+	static final Color tan = new Color(210,180,140);
+	static final Color goldenrod = new Color(218,165,32);
+	
+	public static final Color[] colors = {red, orange, yellow, green, blue, purple,pink,hotPink,maroon,brown,green_gray,darkgreen,olive,greenyellow,teal,cyan,turqoise,slateblue,fuchsia,blueviolet,tan,goldenrod};
+
+  //to give a user an idea of what they can request (All of these were manually counted, except for the colors)
+  public static final int numberOfVariablesAvailable = 5;
+  public static final int numberOfColorsAvailable = colors.length;
+  public static final int numberOfShapesAvailable = 7;
+  public static final int numberOfFillsAvailable = 5;
+  public static final int numberOfBorderColorsAvailable = colors.length;
   
   //define variables
-  public static final int COLOR = 0;
-  public static final int NUMBER = 1;
-  public static final int SHAPE = 2;
-  public static final int FILL = 3;
+  public static final int COLOR = 4;
+  public static final int NUMBER = 0;
+  public static final int SHAPE = 1;
+  public static final int FILL = 2;
+  public static final int BORDER = 3;
+  //SHAPE must be a smaller value than FILL (the others can be rearranged as you like) //TODO somehow make it so that these can be rearranged or chosen or whatever
   
-  //color
-  final int GREEN = 0;
-  final int BLUE = 1;
-  final int YELLOW = 2;
-  final int PURPLE = 3;
-  final int RED = 4;
-  final int ORANGE = 5;
   //shape
   public static final int MOUNTAINS = 0;
   public static final int DIAMOND = 1;
@@ -46,31 +70,15 @@ public class Card {
   final int STAR = 20;
   final int LIGHTNING_BOLT = 21;
   //fill
-  public static final int OUTLINE = 2;
-  public static final int STRIPED = 3;
-  public static final int SOLID = 1;
-  public static final int GRADIENT = 0;
-  public static final int DOUBLE_OUTLINE = 4;
+  public static final int OUTLINE = 0;
+  public static final int STRIPED = 1;
+  public static final int SOLID = 2;
+  public static final int GRADIENT = 3;
+  public static final int THICK_OUTLINE = 4;
   
-  
-	final Color red = new Color(255,0,0);
-	final Color orange = new Color(255,140,0);
-	final Color yellow = new Color(204,204,0);
-	final Color green = new Color(0,255,0);
-	final Color blue = new Color(0,0,255);
-	final Color purple = new Color(128,0,128);
 	
-	Color[][] colorschemes = {
-			{green, blue, yellow, purple, red, orange},
-			{red, orange, yellow, green, blue, purple},
-			{},
-	};
-	
-  
   public Card()
   {
-	  initialized = false;
-		
 	  cardsInASet = 3;
 	  int numberOfVariables = 4;
 	  variables = new int[numberOfVariables];
@@ -85,24 +93,33 @@ public class Card {
   
   public Card(int numberOfVariables,int numberOfCardstoaSet,int[] variables)
   {
-	  initialized = false;
-	  
+	  this(numberOfVariables,numberOfCardstoaSet,variables,0);
+  }
+  
+  public Card(int numberOfVariables,int numberOfCardstoaSet,int[] variables, int colorScheme)
+  {
 	  cardsInASet = numberOfCardstoaSet;
 	  
-	  if(variables.length!=numberOfVariables)
+	  if(variables.length<numberOfVariables) // if the number of variables given is less than the number of variables you said you would give
 	  {
 		  throw new IllegalArgumentException("You must give an array of variables consistent with the number of variables stated.");
 	  }
 	  
+	  int[] variablesAllowed = new int[5];
+	  variablesAllowed[SHAPE] = numberOfShapesAvailable;
+	  variablesAllowed[COLOR] = numberOfColorsAvailable;
+	  variablesAllowed[FILL] = numberOfFillsAvailable;
+	  variablesAllowed[BORDER] = numberOfBorderColorsAvailable;
+	  
 	  this.variables = new int[numberOfVariables];
 	  for(int i =0; i<numberOfVariables; i++)
 	  {
-		  if( (variables[i]<cardsInASet || (i==NUMBER&&variables[i]<cardsInASet+1) ) && variables[i]>=0 )
+		  if( ((i==NUMBER && variables[i]<cardsInASet+1 && variables[i]>0) || variables[i]<variablesAllowed[i]) && variables[i]>=0 )
 		  {
 			  this.variables[i]=variables[i];
 		  }
 		  else
-			  {throw new IllegalArgumentException("variable is out of bounds");}
+			  {throw new IllegalArgumentException("variable "+ i +" ("+variables[i]+") is out of bounds");}
 	  }
 	  if(variables.length>NUMBER)
 	  {
@@ -111,9 +128,7 @@ public class Card {
 			  throw new IllegalArgumentException("Number of symbols must be at least 1");
 		  }
 	  }
-	  
 	  selected = false;
-	  
 	  initialized = true;
   }
   
@@ -141,24 +156,28 @@ public class Card {
 	  if(!initialized)
 	  	{throw new IllegalArgumentException("card is not initialized");}
 	  
-	  Color currentColor = g.getColor();  
+	  //get the current variables so that we can reset them to this later
+	  Color currentColor = g.getColor();
+	  Graphics2D g2 = (Graphics2D) g;
+	  Stroke defaultStroke = g2.getStroke();
 	  
-	  if(!selected)
-	  {
-		  g.setColor(Color.white);
-		  g.fillRoundRect(x, y, width, height, 10, 10);//fill card
-		  g.setColor(Color.black);
-		  g.drawRoundRect(x, y, width, height, 10, 10);//draw border of card
-	  }
-	  else
-	  {
-		  g.setColor(Color.black);
-		  g.fillRoundRect(x, y, width, height, 10, 10);//fill card
-		  g.setColor(Color.white);
-		  g.drawRoundRect(x, y, width, height, 10, 10);//draw border of card
-	  }
+	  //create some variables that we're gonna call through the rest of this method
+	  Stroke thickStroke = new BasicStroke(width/15);
+	  Color backgroundColor = (selected?Color.black:Color.gray); //if the card is selected, the background is black; else, gray
+	  Color outlineColor = variables.length>BORDER?(colors[variables[BORDER]]):(selected?Color.gray:Color.black); //if BORDER is a variable, the outline is that color. Else, if the card is selected, gray, else, black
 	  
-	  g.setColor(colorschemes[0][variables[COLOR]]);
+	  //draw blank card
+	  g2.setStroke(thickStroke);
+	  g.setColor(backgroundColor);
+	  g.fillRoundRect(x, y, width, height, 10, 10);//fill card
+	  g.setColor(outlineColor);
+	  g.drawRoundRect(x, y, width, height, 10, 10);//draw border of card
+	  
+	  //return to previous stroke
+	  g2.setStroke(defaultStroke);
+	  
+	  //If COLOR is a variable, set g to draw the shapes with that color. Else, if the card is selected, draw the shapes in gray; else, black.
+	  g.setColor((variables.length>COLOR)?colors[variables[COLOR]]:(selected?Color.gray:Color.black));
 	  
 	  if(variables.length>SHAPE)//if the variables includes shape
 	  {
@@ -166,10 +185,12 @@ public class Card {
 		  int yBuffer = 10;
 		  int xBuffer = 10;
 		  
-		  int h = (height-(2*yBuffer))/variables[NUMBER]-yBuffer/2;
+		  int number = (variables.length>NUMBER?variables[NUMBER]:1); //if number is one of the variables given, use the number given. Else, use 1.
+		  
+		  int h = (height-(2*yBuffer))/number-yBuffer/2;
 		  int w = width-2*xBuffer;
 		  
-		  for(int i =0; i<variables[NUMBER];i++)
+		  for(int i =0; i<number ; i++)
 		  {
 			  if(variables[SHAPE]==SQUARE)
 			  {
@@ -191,10 +212,16 @@ public class Card {
 					  }
 					  if(variables[FILL]==GRADIENT)
 					  {
-						  	GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, Color.white) ; //(x,y,Color,x2,y2,Color)
+						  	GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, backgroundColor) ; //(x,y,Color,x2,y2,Color)
 				            Graphics2D g2d = (Graphics2D) g;
 				            g2d.setPaint(gp);
 				            g2d.fillRect(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);
+					  }
+					  if(variables[FILL]==THICK_OUTLINE)
+					  {
+						  g2.setStroke(thickStroke);
+						  g.drawRect(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);//outline
+						  g2.setStroke(defaultStroke);
 					  }
 				  }
 				  else // fill is not a variable
@@ -226,11 +253,18 @@ public class Card {
 					  
 					  if(variables[FILL]==GRADIENT)
 					  {
-						  GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, Color.white) ; //(x,y,Color,x2,y2,Color)
+						  GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, backgroundColor) ; //(x,y,Color,x2,y2,Color)
 				          Graphics2D g2d = (Graphics2D) g;
 				          g2d.setPaint(gp);
 				          g2d.fillPolygon(xPoints, yPoints, 3);
 					  }
+					  if(variables[FILL]==THICK_OUTLINE)
+					  {
+						  g2.setStroke(thickStroke);
+						  g.drawPolygon(xPoints, yPoints, 3);//outline
+						  g2.setStroke(defaultStroke);
+					  }
+					  
 				  }
 				  else //fill is not a variable
 				  {
@@ -259,10 +293,16 @@ public class Card {
 					  
 					  if(variables[FILL]==GRADIENT)
 					  {
-						  	GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, Color.white) ; //(x,y,Color,x2,y2,Color)
+						  	GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, backgroundColor) ; //(x,y,Color,x2,y2,Color)
 						  	Graphics2D g2d = (Graphics2D) g;
 				            g2d.setPaint(gp);
 				            g2d.fillOval(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);
+					  }
+					  if(variables[FILL]==THICK_OUTLINE)
+					  {
+						  g2.setStroke(thickStroke);
+						  g.drawOval(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, w, h);//outline
+						  g2.setStroke(defaultStroke);
 					  }
 				  }
 				  else //fill is not a variable
@@ -300,10 +340,16 @@ public class Card {
 					  
 					  if(variables[FILL]==GRADIENT)
 					  {
-						  GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, Color.white) ; //(x,y,Color,x2,y2,Color)
+						  GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, backgroundColor) ; //(x,y,Color,x2,y2,Color)
 				          Graphics2D g2d = (Graphics2D) g;
 				          g2d.setPaint(gp);
 				          g2d.fillPolygon(xPoints, yPoints, 4);
+					  }
+					  if(variables[FILL]==THICK_OUTLINE)
+					  {
+						  g2.setStroke(thickStroke);
+						  g.drawPolygon(xPoints, yPoints, 4);
+						  g2.setStroke(defaultStroke);
 					  }
 				  }
 				  else // fill is not a variable
@@ -337,10 +383,16 @@ public class Card {
 					  
 					  if(variables[FILL]==GRADIENT)
 					  {
-						  GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, Color.white) ; //(x,y,Color,x2,y2,Color)
+						  GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, backgroundColor) ; //(x,y,Color,x2,y2,Color)
 				          Graphics2D g2d = (Graphics2D) g;
 				          g2d.setPaint(gp);
 				          g2d.fillPolygon(xPoints, yPoints, 4);
+					  }
+					  if(variables[FILL]==THICK_OUTLINE)
+					  {
+						  g2.setStroke(thickStroke);
+						  g.drawPolygon(xPoints, yPoints, 4);
+						  g2.setStroke(defaultStroke);
 					  }
 				  }
 				  else // fill is not a variable
@@ -377,10 +429,16 @@ public class Card {
 					  
 					  if(variables[FILL]==GRADIENT)
 					  {
-						  GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, Color.white) ; //(x,y,Color,x2,y2,Color)
+						  GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, backgroundColor) ; //(x,y,Color,x2,y2,Color)
 				          Graphics2D g2d = (Graphics2D) g;
 				          g2d.setPaint(gp);
 				          g2d.fillPolygon(xPoints, yPoints, 4);
+					  }
+					  if(variables[FILL]==THICK_OUTLINE)
+					  {
+						  g2.setStroke(thickStroke);
+						  g.drawPolygon(xPoints, yPoints, 4);
+						  g2.setStroke(defaultStroke);
 					  }
 				  }
 				  else // fill is not a variable
@@ -402,7 +460,6 @@ public class Card {
 						  {y+yBuffer+(yBuffer/2+h)*i+h , y+yBuffer+(yBuffer/2+h)*i+h , y+yBuffer+(yBuffer/2+h)*i+h/7}};
 				  
 				  Color temp = g.getColor();
-				  Color background = (selected?Color.black:Color.WHITE);
 				  
 				  if(variables.length>FILL)//if the variables includes the fill
 				  {
@@ -412,7 +469,7 @@ public class Card {
 						  {
 							  g.drawPolygon(xPoints[triangle], yPoints[triangle], 3);
 						  }
-						  g.setColor(background);
+						  g.setColor(backgroundColor);
 						  g.fillPolygon(xPoints[2], yPoints[2], 3);
 						  g.setColor(temp);
 						  g.drawPolygon(xPoints[2], yPoints[2], 3);
@@ -424,7 +481,7 @@ public class Card {
 							  int xDistance = (xPoints[triangle][1]-xPoints[triangle][0])/(numberOfStripes/2);
 							  if (triangle == 2)
 							  {
-								  g.setColor(background);
+								  g.setColor(backgroundColor);
 								  g.fillPolygon(xPoints[2], yPoints[2], 3);
 								  g.setColor(temp);
 							  }
@@ -441,7 +498,7 @@ public class Card {
 						  for(int triangle = 0; triangle < 3; triangle++)
 						  {
 							  g.fillPolygon(xPoints[triangle], yPoints[triangle], 3);
-							  g.setColor(background);
+							  g.setColor(backgroundColor);
 							  g.drawPolygon(xPoints[triangle], yPoints[triangle], 3);
 							  g.setColor(temp);
 						  }
@@ -449,17 +506,30 @@ public class Card {
 					  
 					  if(variables[FILL]==GRADIENT)
 					  {
-						  GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, Color.white) ; //(x,y,Color,x2,y2,Color)
+						  GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, backgroundColor) ; //(x,y,Color,x2,y2,Color)
 				          Graphics2D g2d = (Graphics2D) g;
 				          g2d.setPaint(gp);
 				          for(int triangle = 0; triangle < 3; triangle++)
 						  {
 							  g2d.fillPolygon(xPoints[triangle], yPoints[triangle], 3);
-							  g.setColor(background);
+							  g.setColor(backgroundColor);
 							  g.drawPolygon(xPoints[triangle], yPoints[triangle], 3);
 							  g2d.setPaint(gp);
 						  }
 				          g.setColor(temp);
+					  }
+					  if(variables[FILL]==THICK_OUTLINE)
+					  {
+						  g2.setStroke(thickStroke);
+						  for(int triangle = 0; triangle < 3; triangle++)
+						  {
+							  g.drawPolygon(xPoints[triangle], yPoints[triangle], 3);
+						  }
+						  g.setColor(backgroundColor);
+						  g.fillPolygon(xPoints[2], yPoints[2], 3);
+						  g.setColor(temp);
+						  g.drawPolygon(xPoints[2], yPoints[2], 3);
+						  g2.setStroke(defaultStroke);
 					  }
 				  }
 				  else // fill is not a variable
@@ -467,7 +537,7 @@ public class Card {
 					  for(int triangle = 0; triangle < 3; triangle++)
 					  {
 						  g.fillPolygon(xPoints[triangle], yPoints[triangle], 3);
-						  g.setColor(background);
+						  g.setColor(backgroundColor);
 						  g.drawPolygon(xPoints[triangle], yPoints[triangle], 3);
 						  g.setColor(temp);
 					  }
@@ -483,7 +553,7 @@ public class Card {
 				  {
 					  if(variables[FILL]==STRIPED)
 					  {
-						  //TODO make stripes in the star
+						  //make stripes in the star
 						  
 					  }
 					  
@@ -494,10 +564,16 @@ public class Card {
 					  
 					  if(variables[FILL]==GRADIENT)
 					  {
-						  GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, Color.white) ; //(x,y,Color,x2,y2,Color)
+						  GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, backgroundColor) ; //(x,y,Color,x2,y2,Color)
 				          Graphics2D g2d = (Graphics2D) g;
 				          g2d.setPaint(gp);
 				          g2d.fillPolygon(xPoints, yPoints, 5);
+					  }
+					  if(variables[FILL]==THICK_OUTLINE)
+					  {
+						  g2.setStroke(thickStroke);
+						  g.drawPolygon(xPoints, yPoints, 5);
+						  g2.setStroke(defaultStroke);
 					  }
 				  }
 				  else // fill is not a variable
@@ -516,7 +592,7 @@ public class Card {
 				  {
 					  if(variables[FILL]==STRIPED)
 					  {
-						  //TODO make stripes in the lightningbolt
+						  //make stripes in the lightningbolt
 					  }
 					  
 					  if(variables[FILL]==SOLID)
@@ -526,10 +602,16 @@ public class Card {
 					  
 					  if(variables[FILL]==GRADIENT)
 					  {
-						  GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, Color.white) ; //(x,y,Color,x2,y2,Color)
+						  GradientPaint gp = new GradientPaint(x+xBuffer, y+yBuffer+(yBuffer/2+h)*i, g.getColor(), x+xBuffer+w, y+yBuffer+(yBuffer/2+h)*i+h, backgroundColor) ; //(x,y,Color,x2,y2,Color)
 				          Graphics2D g2d = (Graphics2D) g;
 				          g2d.setPaint(gp);
 				          g2d.fillPolygon(xPoints, yPoints, 6);
+					  }
+					  if(variables[FILL]==THICK_OUTLINE)
+					  {
+						  g2.setStroke(thickStroke);
+						  g.drawPolygon(xPoints, yPoints, 6);
+						  g2.setStroke(defaultStroke);
 					  }
 				  }
 				  else // fill is not a variable
@@ -545,16 +627,14 @@ public class Card {
 	  {
 		  g.fillRoundRect(x+10, y+10, width-20, height-20, 10, 10);//fill card with color
 		  
-		  
 	  }
 	  if(variables.length>NUMBER)
 	  {
-		  if(selected)
-		  {g.setColor(Color.WHITE);}
-		  else
-		  { g.setColor(Color.BLACK);}
-		  g.setFont(new Font(null, Font.CENTER_BASELINE, 20) );
-		  g.drawString(""+variables[NUMBER], x+10, y+30);
+		  Font current = g.getFont();
+		  g.setColor(Color.WHITE);
+		  g.setFont(new Font(null, Font.CENTER_BASELINE, height/7) );
+		  g.drawString(""+variables[NUMBER], x+width/7, y+height/7);
+		  g.setFont(current);
 	  }
 	  g.setColor(currentColor);
   }
@@ -598,19 +678,34 @@ public class Card {
 	  String shape = "";
 	  String fill = "";
 	  
-	  if(variables[COLOR]==GREEN)
+	  if(colors[variables[COLOR]].equals(red))
 	  {
-		  color = "green";
+		  color = "red";
 	  }
-	  if(variables[COLOR]==BLUE)
+	  else if(colors[variables[COLOR]].equals(orange))
 	  {
-		  color = "blue";
+		  color = "orange";
 	  }
-	  if(variables[COLOR]==YELLOW)
+	  else if(colors[variables[COLOR]].equals(yellow))
 	  {
 		  color = "yellow";
 	  }
-	  
+	  else if(colors[variables[COLOR]].equals(green))
+	  {
+		  color = "green";
+	  }
+	  else if(colors[variables[COLOR]].equals(blue))
+	  {
+		  color = "blue";
+	  }
+	  else if(colors[variables[COLOR]].equals(purple))
+	  {
+		  color = "purple";
+	  }
+	  else //it is not any of the defined colors (I don't expect this to happen)
+	  {
+		  color = ("color "+variables[COLOR]);
+	  }
 	  if(variables.length>NUMBER)
 	  {
 		int number = variables[NUMBER];
