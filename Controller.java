@@ -1,16 +1,20 @@
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseAdapter;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 
 public class Controller extends JFrame   implements MouseListener{
 	
 	private boolean debugging = false;
+	private boolean halfsize = true;
 	
 	private boolean gameInitialized = false;
 	private int points;
@@ -43,6 +47,9 @@ public class Controller extends JFrame   implements MouseListener{
     
     private static final int HORIZONTALLY =  0;
     private static final int VERTICALLY = 1;
+    
+    private int width;
+    private int height;
 
 	public static void main(String[] args) 
 	{
@@ -53,8 +60,8 @@ public class Controller extends JFrame   implements MouseListener{
 	Controller()
 	{
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		int width = (int)screenSize.getWidth()/2;
-		int height = (int)screenSize.getHeight();
+		width = (int)screenSize.getWidth()/(halfsize?2:1);
+		height = (int)screenSize.getHeight()-40;
 		
         this.setSize(width, height);
         this.setLocation(0, 0);
@@ -72,15 +79,78 @@ public class Controller extends JFrame   implements MouseListener{
      // register this class as a mouse event listener for the JFrame
         this.addMouseListener(this);
         
-        start();
+        
+        Graphics g = this.getGraphics();
+        // "Hint" button
+		JButton hint = new JButton("Hint");
+		hint.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked(MouseEvent e) 
+			{
+				//TODO hint button -- Make this useful
+				System.out.println("you clicked the hint button.");
+				
+				Font current = g.getFont();
+				Color currentColor = g.getColor();
+				g.setColor(Color.white);
+				g.setFont(new Font(null, Font.CENTER_BASELINE, 50) );
+				g.fillRoundRect(width/4, height/4, 550, 200, 10, 10);
+				g.setColor(Color.magenta);
+				g.drawString("There is at least one", width/4+15 ,height/4+65);
+				g.drawString("set on the table.", width/4+15 ,height/4+65+50);
+				g.drawString("Not telling you where.", width/4+15 ,height/4+65+100);
+				g.setFont(current);
+				g.setColor(currentColor);
+				
+			}
+		});
+		hint.setBounds(10, 10, 100, 30);
+		this.add(hint);
+		
+		// New game button
+		JButton start = new JButton("New Game");
+		start.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked(MouseEvent e) 
+			{
+				if(gameInitialized)
+				{
+					//TODO are you sure? This'll restart everything.
+					//if(yes)
+					//resetGame();
+					Font current = g.getFont();
+					Color currentColor = g.getColor();
+					g.setColor(Color.white);
+					g.setFont(new Font(null, Font.CENTER_BASELINE, 50) );
+					g.fillRoundRect(width/4, height/4, 570, 80, 10, 10);
+					g.setColor(Color.green);
+					g.drawString("No. You're still playing.", width/4+15 ,height/4+65);
+					g.setFont(current);
+					g.setColor(currentColor);
+				}
+				else
+				{
+					start();
+				}
+			}
+		});
+		start.setBounds(120, 10, 100, 30);
+		this.add(start);
+		
+		start();
+		
 	}
 	
 	private void start()
 	{
+		gameInitialized = false;
+		
 		//TODO start menu
 		
 		//TODO have the user choose how many variables and how many cards to a set
-		int variables = 4; // up to Card.numberOfVariablesAvailable
+		int variables = 3; // up to Card.numberOfVariablesAvailable
 		int setSize = 3; // 3, 4, or 5
 		
 		int[][] v = new int[variables][setSize];
@@ -119,30 +189,44 @@ public class Controller extends JFrame   implements MouseListener{
 		numberOfCardsOnTheTable = 0;
 		numberOfSelectedCards = 0;
 		
+		int height_width_ratio = 2;
+		int border_proportion = 5; //this determines the space between cards based on the width of the cards. The higher the number, the smaller the distance.
+		
 		//these are requested from the user in start(), which passes them in to here.
 		numberOfVariables = variables;
 		cardsToASet = setSize;
 		
-		//TODO eventually make these variables dynamic based on the screen size, number of variables, and size of a set, but for now they are hardcoded in.
 		//where to draw everything
-		rows = 6;
-		columns = 6;
-		cardWidth = 75;
-		cardHeight = 150;
-		firstCardX = 150;
-		firstCardY = 50;
-		cardBufferX = 10;
-		cardBufferY = 10;
+		int borderWidth = (width - gameContentPane.getWidth())/2; //this is identical to the calcualtion above in the constructor
+		firstCardX = borderWidth+20;
+		firstCardY = borderWidth+80;
+		
+		//TODO choose rows and columns based on the size of the deck. (rows*columns MUST be greater than the maximum number of cards that can be on the table w/out a set)
+		int min = 20; // TODO this is the variable that needs to be modified based on the deck size.
+		int cols = 0;
+		columns = 0;
+		do
+		{
+			columns++;
+			cols = columns+((cardsToASet+2)/2); //columns of full-sized cards + setSize+1 columns of half-sized cards
+			rows = (int) height*cols/width/height_width_ratio; //using the ratio between cardWidth and cardHeight and the number of columns that are on the table, calculate how many rows will fit
+			
+			if(debugging)
+			{
+				System.out.println(columns+" column"+(columns==1?"":"s")+", "+rows+" row"+(rows==1?"":"s")+": can hold "+rows*columns+" card"+(rows*columns==1?"":"s")+"; need "+min+" cardslots."+(rows*columns<min?" Resizing...":" Sufficient."));
+			}
+		}while(rows*columns < min);
+		
+		
+		cardWidth = (width-borderWidth-firstCardX)/cols*border_proportion/(border_proportion+1);
+		cardHeight = cardWidth*height_width_ratio;
+		cardBufferX = cardWidth/border_proportion;
+		cardBufferY = cardBufferX;
+		
 		//dealingStyle = VERTICALLY;
 		dealingStyle = HORIZONTALLY;
-		if(dealingStyle == VERTICALLY)
-		{
-			minimumCards = rows*(columns-2);
-		}
-		else
-		{
-			minimumCards = (rows-2)*columns;
-		}
+		
+		minimumCards = dealingStyle==HORIZONTALLY?(rows-1)*columns:rows*(columns-1);
 		
 		if(minimumCards>rows*columns)
 		{
@@ -175,8 +259,10 @@ public class Controller extends JFrame   implements MouseListener{
 		super.paint(g);
 		if(gameInitialized)
 		{
-			int counter = 0;
+			//TODO display the points
+			
 			//paint all cards on the table
+			int counter = 0;
 	        for (int i = 0; i<cardsOnTable.length; i++)
 	        {
 	        	if(cardsOnTable[i]!=null)
@@ -205,7 +291,7 @@ public class Controller extends JFrame   implements MouseListener{
 	        	if(foundSets[i]!=null)
 	        	{
 		        	//int x = firstCardX + (cardWidth+cardBufferX)*(columns) + (cardWidth+cardBufferX)/2*( 1 + c%cardsToASet + (c/(cardsToASet*rows*2))*(cardsToASet+1) ) ; // starting position + combined width of all the dealt cards + width of one minicard *( 1 (as a buffer space) + how many are already in this row + (how many rows are before this row)*(how many cards are in each of those rows + 1 (as a buffer space))
-	        		int x = firstCardX + (cardWidth+cardBufferX)*(columns) + (cardWidth+cardBufferX)/2*( 1 + (cardsToASet-(c%cardsToASet)) + (c/(cardsToASet*rows*2))*(cardsToASet+1) ) ; // starting position + combined width of all the dealt cards + width of one minicard *( 1 (as a buffer space) + (how many will be in this row - how many are already in this row /*because I am painting them in reverse order but wish them to be drawn across the row in the order they were selected*/) + (how many rows are before this row)*(how many cards are in each of those rows + 1 (as a buffer space))
+	        		int x = firstCardX + (cardWidth+cardBufferX)*(columns) + (cardWidth+cardBufferX)/2*( (cardsToASet-(c%cardsToASet)) + (c/(cardsToASet*rows*2))*(cardsToASet+1) ) ; // starting position + combined width of all the dealt cards + width of one minicard *( (how many will be in this row - how many are already in this row /*because I am painting them in reverse order but wish them to be drawn across the row in the order they were selected*/) + (how many rows are before this row)*(how many cards are in each of those rows + 1 (as a buffer space))
 		        	int y = firstCardY+(cardHeight+cardBufferY)/2*((c/cardsToASet)%(rows*2));
 		        	
 		        	foundSets[i].draw(g, x, y, cardWidth/2, cardHeight/2);
@@ -223,27 +309,44 @@ public class Controller extends JFrame   implements MouseListener{
 		Card [] tablecards = new Card [tableCards.length];
 		Card [] test = new Card[3];
 		int numberOfSets = 0;
-		
 		for (int i = 0; i<tableCards.length; i++)
 		{
 			tablecards[i] = tableCards[i];
 		}
 		
-		for(int card1=0;card1<tableCards.length-2; card1++)
-			{
-			for(int card2=card1+1;card2<tableCards.length-1; card2++)
+		if(cardsToASet ==3 )
+		{
+			
+			for(int card1=0;card1<tableCards.length-2; card1++)
 				{
-				for(int card3=card2+1;card3<tableCards.length; card3++)
+				for(int card2=card1+1;card2<tableCards.length-1; card2++)
 					{
-					test[0] = tablecards[card1];test[1] = tablecards[card2];test[2] = tablecards[card3];
-					if (isASet(test)==true)
-						{numberOfSets++;}
-					//System.out.println(numberOfSets);
+					for(int card3=card2+1;card3<tableCards.length; card3++)
+						{
+						test[0] = tablecards[card1];
+						test[1] = tablecards[card2];
+						test[2] = tablecards[card3];
+						if (isASet(test)==true)
+							{numberOfSets++;}
+						//System.out.println(numberOfSets);
+						}
 					}
 				}
-			}
-		System.out.println(numberOfSets);
-		return numberOfSets;
+			System.out.println(numberOfSets);
+			return numberOfSets;
+		}
+		else if(cardsToASet==4)
+		{
+			return 1;
+		}
+		else if(cardsToASet==5)
+		{
+			return 1;
+		}
+		else
+		{
+			return 1;
+		}
 		
 		//return 1;
 	}
@@ -272,7 +375,7 @@ public class Controller extends JFrame   implements MouseListener{
 		for(int i = 0; i<numberOfVariables ; i++)//for each variable
 		{
 			//int[] v = new int[cardsToASet];
-			int[] v = new int[7]; // 7 is the numberOfShapes available, which is currently our variable with the most options
+			int[] v = new int[Card.colors.length]; // (colors is currently our variable with the most options)
 			for(int k = 0 ; k<v.length ; k ++)
 			{
 				v[k] = 0;
@@ -418,9 +521,22 @@ public class Controller extends JFrame   implements MouseListener{
 	
 	public void checkSet()
 	{
+		Graphics g = this.getGraphics();
+		repaint();
 		if(isASet(selectedCards))//if it is a set
 		{
-			System.out.println("It's a set!");//TODO make some sort of announcement on screen
+			//show the user that it is a set
+			Font current = g.getFont();
+			Color currentColor = g.getColor();
+			g.setColor(Color.white);
+			g.setFont(new Font(null, Font.CENTER_BASELINE, 80) );
+			g.fillRoundRect(width/2, height/2, 90, 90, 10, 10);
+			g.setColor(Color.blue);
+			g.drawString(":)", width/2+15 ,height/2+65);
+			try { Thread.sleep(1500);}catch (Exception e){;}
+			g.setFont(current);
+			g.setColor(currentColor);
+			
 			//give points
 			points++;
 			
@@ -464,8 +580,20 @@ public class Controller extends JFrame   implements MouseListener{
 		}//end if
 		else //it is not a set
 		{
-			//scold, maybe deduct points
-			System.out.println("Sorry, not a set.");//TODO change to something on the JFrame (maybe turn them all red for a moment?)
+			//TODO scold, maybe deduct points
+			System.out.println("Sorry, not a set.");
+			
+			//TODO change to something on the JFrame (maybe turn them all red for a moment?)
+			Font current = g.getFont();
+			Color currentColor = g.getColor();
+			g.setColor(Color.white);
+			g.setFont(new Font(null, Font.CENTER_BASELINE, 80) );
+			g.fillRoundRect(width/2, height/2, 130, 90, 10, 10);
+			g.setColor(Color.red);
+			g.drawString(">:(", width/2+15 ,height/2+65);
+			try { Thread.sleep(1500);}catch (Exception e){;}
+			g.setFont(current);
+			g.setColor(currentColor);
 		}
 		
 		//empty selectedCards
@@ -486,6 +614,7 @@ public class Controller extends JFrame   implements MouseListener{
 	 */
 	public void dealTilFull()
 	{
+		boolean gameOver = false;
 		boolean dealing = true;
 		while(dealing)
 		{
@@ -505,7 +634,7 @@ public class Controller extends JFrame   implements MouseListener{
 					{
 						System.out.println("deck is empty");
 					}
-					//TODO game over
+					gameOver = true;
 					dealing = false;
 				}
 			}
@@ -541,6 +670,17 @@ public class Controller extends JFrame   implements MouseListener{
 				}
 			}//end else
 		}//end while
+		
+		if(gameOver)
+		{
+			gameOver();
+		}
+	}
+	
+	private void gameOver()
+	{
+		//TODO game over. There are no sets on the table, nor are there cards left in the deck. 
+		//You'll want to do different things based on whether or not there are any cards on the table still. (The latter is definitely a win, the former not so much)
 	}
 	
 	public void mouseEntered(MouseEvent arg0) {
