@@ -179,16 +179,34 @@ public class Controller extends JFrame   implements MouseListener{
 		}
 	}
 	
-	private int howManySets(Card[] tableCards)
+	private int howManySets(Card[] tableCards, int setSize)
 	{
 		if(!gameInitialized)
 	  		{throw new IllegalArgumentException("game has not been initialized");}
 		
 		Card [] tablecards = new Card [tableCards.length];
-		Card [] test = new Card[3];
+		Card [] test = new Card[setSize];
 		int numberOfSets = 0;
+		boolean endWhile = true;
+		int tester=0;
+		while(endWhile)
+		{
+			
+			for (int x = tester; x<test.length; x++)
+			{
+				int zero=0;
+				test[zero++] = tablecards[x];
+				
+			}
+			if (isASet(test)==true)
+				numberOfSets++;
+			tester++;
+			if(tablecards.length==tester+test.length)
+				endWhile = false;
+		}
 		
-		for (int i = 0; i<tableCards.length; i++)
+		
+		/*for (int i = 0; i<tableCards.length; i++)
 		{
 			tablecards[i] = tableCards[i];
 		}
@@ -205,7 +223,7 @@ public class Controller extends JFrame   implements MouseListener{
 			//System.out.println(numberOfSets);
 					}
 				}
-			}
+			}*/
 		System.out.println(numberOfSets);
 		return numberOfSets;
 		
@@ -445,7 +463,7 @@ public class Controller extends JFrame   implements MouseListener{
 		boolean dealing = true;
 		while(dealing)
 		{
-			if (howManySets(cardsOnTable) == 0) // there are no sets on the table
+			if (howManySets(cardsOnTable, cardsToASet ) == 0) // there are no sets on the table
 			{
 				if(debugging)
 				{
