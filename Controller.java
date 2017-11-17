@@ -9,7 +9,10 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseAdapter;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 public class Controller extends JFrame   implements MouseListener{
 	
@@ -79,8 +82,8 @@ public class Controller extends JFrame   implements MouseListener{
      // register this class as a mouse event listener for the JFrame
         this.addMouseListener(this);
         
-        
         Graphics g = this.getGraphics();
+        
         // "Hint" button
 		JButton hint = new JButton("Hint");
 		hint.addMouseListener(new MouseAdapter()
@@ -88,27 +91,27 @@ public class Controller extends JFrame   implements MouseListener{
 			@Override
 			public void mouseClicked(MouseEvent e) 
 			{
-				//TODO hint button -- Make this useful
-				System.out.println("you clicked the hint button.");
-				
-				Font current = g.getFont();
-				Color currentColor = g.getColor();
-				g.setColor(Color.white);
-				g.setFont(new Font(null, Font.CENTER_BASELINE, 50) );
-				g.fillRoundRect(width/4, height/4, 550, 200, 10, 10);
-				g.setColor(Color.magenta);
-				g.drawString("There is at least one", width/4+15 ,height/4+65);
-				g.drawString("set on the table.", width/4+15 ,height/4+65+50);
-				g.drawString("Not telling you where.", width/4+15 ,height/4+65+100);
-				g.setFont(current);
-				g.setColor(currentColor);
-				
+				if(gameInitialized)
+				{
+					//TODO hint button -- Make this useful
+					System.out.println("you clicked the hint button.");
+					
+					Font current = g.getFont();
+					Color currentColor = g.getColor();
+					g.setColor(Color.white);
+					g.setFont(new Font(null, Font.CENTER_BASELINE, 50) );
+					g.fillRoundRect(width/4, height/4, 550, 200, 10, 10);
+					g.setColor(Color.magenta);
+					g.drawString("There is at least one", width/4+15 ,height/4+65);
+					g.drawString("set on the table.", width/4+15 ,height/4+65+50);
+					g.drawString("Not telling you where.", width/4+15 ,height/4+65+100);
+					g.setFont(current);
+					g.setColor(currentColor);
+				}
 			}
 		});
-		hint.setBounds(10, 10, 100, 30);
-		this.add(hint);
 		
-		// New game button
+		// "New game" button
 		JButton start = new JButton("New Game");
 		start.addMouseListener(new MouseAdapter()
 		{
@@ -117,18 +120,11 @@ public class Controller extends JFrame   implements MouseListener{
 			{
 				if(gameInitialized)
 				{
-					//TODO are you sure? This'll restart everything.
-					//if(yes)
-					//resetGame();
-					Font current = g.getFont();
-					Color currentColor = g.getColor();
-					g.setColor(Color.white);
-					g.setFont(new Font(null, Font.CENTER_BASELINE, 50) );
-					g.fillRoundRect(width/4, height/4, 570, 80, 10, 10);
-					g.setColor(Color.green);
-					g.drawString("No. You're still playing.", width/4+15 ,height/4+65);
-					g.setFont(current);
-					g.setColor(currentColor);
+					int sure = JOptionPane.showConfirmDialog(null, "Are you sure? This will restart the entire game and you will lose all your progress."); //this will return 0 for yes, 1 for no, 2 for cancel, and -1 for X
+					if(sure == 0)//yes, they're sure.
+					{
+						start();
+					}
 				}
 				else
 				{
@@ -136,51 +132,168 @@ public class Controller extends JFrame   implements MouseListener{
 				}
 			}
 		});
-		start.setBounds(120, 10, 100, 30);
-		this.add(start);
 		
-		start();
+		hint.setBounds(10, 10, 100, 30);
+		start.setBounds(120, 10, 100, 30);
+		this.add(hint);
+		this.add(start);
 		
 	}
 	
 	private void start()
 	{
+		
+		
 		gameInitialized = false;
 		
 		//TODO start menu
+		//set up the JFrame
+		Container startContent;
+		JFrame startMenu = new JFrame();
+		startMenu.setSize(width, height);
+		startMenu.setVisible(true);
+		startMenu.addMouseListener(this);
+	    startMenu.setLocation(0, 0);
+	    startMenu.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+	    startContent = startMenu.getContentPane();
+        startContent.setLayout(null); // not need layout, will use absolute system
+		Graphics g = startMenu.getGraphics();
 		
-		//TODO have the user choose how many variables and how many cards to a set
-		int variables = 3; // up to Card.numberOfVariablesAvailable
-		int setSize = 3; // 3, 4, or 5
+		JTextField vars = new JTextField("  # of variables");
+		vars.setBounds(width/2-175, 50, 100, 32);
+		startMenu.add(vars);
+		vars.setColumns(10);
 		
-		int[][] v = new int[variables][setSize];
+		JTextField size = new JTextField(" size of a set");
+		size.setBounds(width/2-50, 50, 100, 32);
+		startMenu.add(size);
+		vars.setColumns(10);
 		
-		//TODO have the user choose whether to go with the default or to customize their deck
-		boolean custom = false;
+		//g.drawString("Please enter the following values and click 'create'",width/2-75,70);
 		
-		if(custom)
+		JButton create = new JButton("Select Deck Parameters");
+		create.addMouseListener(new MouseAdapter()
 		{
-			//TODO
-			// have the user select options for each variable except for numbers, which are automatically assigned based on how many cards there are to a set
-			// (for example: if there are three cards to a set, the user will now select three colors, three shapes, three shadings, etc.)
-			// The selected variables should be represented in the v array as integers.
-			// (you can call things such as Card.SQUARE, Card.colors[i] and other public Card variables as a reference)
-			
-		}
-		else //default
-		{
-			for(int i = 0; i<variables; i++)
+			@Override
+			public void mouseClicked(MouseEvent e) 
 			{
-				for(int j = 0; j<setSize; j++)
+				
+				//try to set the variables to what the user chose but if they did a stupid or tried to break it then just make them the defaults.
+				try{
+					numberOfVariables = Integer.parseInt( vars.getText() );
+				}catch(Exception broke)
 				{
-					v[i][j]= (i==Card.NUMBER?(j+1):(j)); //if this is the NUMBER variable, set this to j+1, else set this to j. That way all variables but NUMBER go from 0 to setSize-1 and NUMBER goes from 1 to setSize
+					numberOfVariables = 4;
 				}
+				try{
+					cardsToASet = Integer.parseInt( size.getText() );
+				}catch(Exception broke)
+				{
+					cardsToASet = 3; 
+				}
+				//make sure they're within the allowable bounds
+				// up to Card.numberOfVariablesAvailable
+				if(numberOfVariables>Card.numberOfVariablesAvailable)
+				{
+					numberOfVariables = Card.numberOfVariablesAvailable;
+				}
+				if(numberOfVariables<1)
+				{
+					numberOfVariables = 1;
+				}
+				// 3, 4, or 5
+				if(cardsToASet>5)
+				{
+					cardsToASet = 5;
+				}
+				if(cardsToASet<3)
+				{
+					cardsToASet = 3;
+				}
+				
+				int[][] v = new int[numberOfVariables][cardsToASet];
+				
+				//have the user choose whether to go with the default or to customize their deck
+				JButton defaultDeck = new JButton("Default Deck");
+				JButton customDeck = new JButton("Custom Deck");
+				
+				defaultDeck.addMouseListener(new MouseAdapter()
+				{
+					@Override
+					public void mouseClicked(MouseEvent e) 
+					{
+						for(int i = 0; i<numberOfVariables; i++)
+						{
+							for(int j = 0; j<cardsToASet; j++)
+							{
+								v[i][j]= (i==Card.NUMBER?(j+1):(j)); //if this is the NUMBER variable, set this to j+1, else set this to j. That way all variables but NUMBER go from 0 to setSize-1 and NUMBER goes from 1 to setSize
+							}
+						}
+						initialize(numberOfVariables,cardsToASet,v);
+						startMenu.dispose();
+					}
+				});
+				
+				customDeck.addMouseListener(new MouseAdapter()
+				{
+					@Override
+					public void mouseClicked(MouseEvent e) 
+					{
+						//TODO
+						// have the user select options for each variable except for numbers, which are automatically assigned based on how many cards there are to a set
+						// (for example: if there are three cards to a set, the user will now select three colors, three shapes, three shadings, etc.)
+						// The selected variables should be represented in the v array as integers.
+						// (you can call things such as Card.SQUARE, Card.colors[i] and other public Card variables as a reference)
+						int count = 0;
+						//for each variable, choose options for each card in a set
+						for(int i = 0 ; i<numberOfVariables; i++)
+						{
+							for(int j = 0; j<cardsToASet; j++)
+							{
+								if(i==Card.COLOR)
+								{
+									JComboBox<Color> style = new JComboBox<Color>();
+									for(int c = 0; c<Card.colors.length; c++)
+									{
+										style.addItem(Card.colors[c]);
+									}
+								}
+								if(i==Card.NUMBER)
+								{
+									;
+								}
+								if(i==Card.SHAPE)
+								{
+									
+								}
+								if(i==Card.FILL)
+								{
+									
+								}
+								if(i==Card.BORDER)
+								{
+									
+								}
+							}
+							
+							count++;
+						}
+						 initialize(numberOfVariables,cardsToASet,v);
+						 startMenu.dispose();
+					}
+				});
+				
+				defaultDeck.setBounds(width/2-200, 100, 150, 32);
+				customDeck.setBounds(width/2+50, 100, 150, 32);
+				startMenu.add(defaultDeck);
+				startMenu.add(customDeck);
+				startMenu.setVisible(false);
+				startMenu.setVisible(true);
 			}
-		}
+		});
 		
-		
-        initialize(variables,setSize,v);
-        repaint();
+		create.setBounds(width/2+75, 50, 200, 32);
+		startMenu.add(create);
 	}
 	
 	private void initialize(int variables, int setSize, int[][] v)
@@ -252,6 +365,7 @@ public class Controller extends JFrame   implements MouseListener{
         
         //make sure that there is at least one set on the table (as well as the minimum number of cards, but that has been satisfied above)
         dealTilFull();
+        repaint();
 	}
 	
 	public void paint(Graphics g)
@@ -259,7 +373,7 @@ public class Controller extends JFrame   implements MouseListener{
 		super.paint(g);
 		if(gameInitialized)
 		{
-			//TODO display the points
+			g.drawString("Sets found: "+points, 250, 60);
 			
 			//paint all cards on the table
 			int counter = 0;
@@ -404,11 +518,6 @@ public class Controller extends JFrame   implements MouseListener{
 		return isASet;
 	}
 	
-	private void resetGame()
-	{
-		//TODO
-	}
-	
 	private void select(Card c)
 	{
 		boolean added = false;
@@ -479,7 +588,7 @@ public class Controller extends JFrame   implements MouseListener{
 		}
 	}//end mouse event
 	
-	public void cardClick(int xMousePosition, int yMousePosition)
+	private void cardClick(int xMousePosition, int yMousePosition)
 	{
 		//determine which card, if any, the user clicked on, and select or deselect it as applicable
 		int counter = 0;
@@ -519,7 +628,7 @@ public class Controller extends JFrame   implements MouseListener{
 		}
 	}//end cardClick
 	
-	public void checkSet()
+	private void checkSet()
 	{
 		Graphics g = this.getGraphics();
 		repaint();
@@ -607,12 +716,12 @@ public class Controller extends JFrame   implements MouseListener{
 	}//end checkSet
 	
 	/**
-	 * public void dealTilFull()
+	 * private void dealTilFull()
 	 * This method will deal cards onto the table until there is at least one set on the table and 
 	 * there are at least minimumCards on the table, or until there are no cards left in the
 	 * deck, whichever comes first.
 	 */
-	public void dealTilFull()
+	private void dealTilFull()
 	{
 		boolean gameOver = false;
 		boolean dealing = true;
@@ -681,6 +790,26 @@ public class Controller extends JFrame   implements MouseListener{
 	{
 		//TODO game over. There are no sets on the table, nor are there cards left in the deck. 
 		//You'll want to do different things based on whether or not there are any cards on the table still. (The latter is definitely a win, the former not so much)
+		
+		boolean win = true;
+		//if there are any cards still on the table, then you didn't win.
+		for(int c = 0; c<cardsOnTable.length; c++)
+		{
+			if(cardsOnTable[c]!=null)//there is a card here
+			{
+				win = false;
+			}
+		}
+		if(win)
+		{
+			//TODO "you win!"
+		}
+		else
+		{
+			//TODO "you lose. :("
+		}
+		
+		gameInitialized = false;
 	}
 	
 	public void mouseEntered(MouseEvent arg0) {
