@@ -125,8 +125,8 @@ public class Controller extends JFrame   implements MouseListener{
 		
 		//TODO eventually make these variables dynamic based on the screen size, number of variables, and size of a set, but for now they are hardcoded in.
 		//where to draw everything
-		rows = 6;
-		columns = 6;
+		rows = 5;
+		columns = 5;
 		cardWidth = 75;
 		cardHeight = 150;
 		firstCardX = 150;
@@ -222,48 +222,40 @@ public class Controller extends JFrame   implements MouseListener{
 		
 		Card [] tablecards = new Card [tableCards.length];
 		Card [] test = new Card[setSize];
-		int numberOfSets = 0;
+		int[] placeOnTable = new int[setSize];
 		boolean endWhile = true;
-		int tester=0;
-		while(endWhile)
-		{
+		boolean notDone= true;
+		int numberOfSets = 0;
+		int current=setSize-1; //the spot in place on table that is getting incremented
+		int marker=current-1;	//this int remembers where current started
+		int end=tablecards.length; //this is just a convenient shortcut so that I do not have to write tablecards.length everytime
+		
+		for(int x =0; x<test.length; x++)
+				{placeOnTable[x]=x;}
+		while(placeOnTable[0]>=end-setSize+current)
+		{	
+			while(placeOnTable[current]<end)
+			{
+				for(int x=0; x<test.length; x++)
+					{test[x] = tablecards[placeOnTable[x]];}
+				if (isASet(test))
+					{numberOfSets++;}
+				placeOnTable[current]++;
 			
-			for (int x = tester; x<test.length; x++)
-			{
-				int zero=0;
-				test[zero++] = tablecards[x];
-				
 			}
-			if (isASet(test)==true)
-				numberOfSets++;
-			tester++;
-			if(tablecards.length==tester+test.length)
-				endWhile = false;
-		}
-		
-		
-		/*for (int i = 0; i<tableCards.length; i++)
-		{
-			tablecards[i] = tableCards[i];
-		}
-		
-		for(int card1=0;card1<tableCards.length-2; card1++)
+			while (placeOnTable[current]<end-setSize+current&&current>0)
 			{
-			for(int card2=card1+1;card2<tableCards.length-1; card2++)
-				{
-				for(int card3=card2+1;card3<tableCards.length; card3++)
-					{
-					test[0] = tablecards[card1];test[1] = tablecards[card2];test[2] = tablecards[card3];
-					if (isASet(test)==true)
-						{numberOfSets++;}
-					//System.out.println(numberOfSets);
-					}
-				}
-			}*/
-		System.out.println(numberOfSets);
+				current--;
+			}
+			placeOnTable[current]++;
+			int inc =1;
+			for(int x=current+1;x<setSize;x++)
+				placeOnTable[x] = placeOnTable[x-1]+1;
+			current = setSize-1;
+		}
+		//System.out.println(numberOfSets);
 		return numberOfSets;
 		
-		//return 1;
 	}
 	
 	private boolean isASet(Card[] cards)
@@ -365,9 +357,10 @@ public class Controller extends JFrame   implements MouseListener{
 				{
 					cardsOnTable[count] = myDeck.deal();
 					added = true;
+					numberOfCardsOnTheTable++;
 				}
 			}
-			numberOfCardsOnTheTable++;
+			System.out.println(numberOfCardsOnTheTable);
 			if(!added)//room wasn't found
 			{
 				throw new IllegalArgumentException("Tried to deal more cards than can fit on the table.");
