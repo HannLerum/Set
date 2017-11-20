@@ -125,8 +125,8 @@ public class Controller extends JFrame   implements MouseListener{
 		
 		//TODO eventually make these variables dynamic based on the screen size, number of variables, and size of a set, but for now they are hardcoded in.
 		//where to draw everything
-		rows = 5;
-		columns = 5;
+		rows = 6;
+		columns = 6;
 		cardWidth = 75;
 		cardHeight = 150;
 		firstCardX = 150;
@@ -253,7 +253,6 @@ public class Controller extends JFrame   implements MouseListener{
 				placeOnTable[x] = placeOnTable[x-1]+1;
 			current = setSize-1;
 		}
-		//System.out.println(numberOfSets);
 		return numberOfSets;
 		
 	}
@@ -357,10 +356,9 @@ public class Controller extends JFrame   implements MouseListener{
 				{
 					cardsOnTable[count] = myDeck.deal();
 					added = true;
-					numberOfCardsOnTheTable++;
 				}
 			}
-			System.out.println(numberOfCardsOnTheTable);
+			numberOfCardsOnTheTable++;
 			if(!added)//room wasn't found
 			{
 				throw new IllegalArgumentException("Tried to deal more cards than can fit on the table.");

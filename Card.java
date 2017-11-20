@@ -52,11 +52,11 @@ public class Card {
   public static final int numberOfBorderColorsAvailable = colors.length;
   
   //define variables
-  public static final int COLOR = 4;
-  public static final int NUMBER = 0;
-  public static final int SHAPE = 1;
-  public static final int FILL = 2;
-  public static final int BORDER = 3;
+  public static final int COLOR = 0;
+  public static final int NUMBER = 1;
+  public static final int SHAPE = 2;
+  public static final int FILL = 3;
+  public static final int BORDER = 4;
   //SHAPE must be a smaller value than FILL (the others can be rearranged as you like) //TODO somehow make it so that these can be rearranged or chosen or whatever
   
   //shape
