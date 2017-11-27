@@ -1,8 +1,11 @@
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -17,7 +20,7 @@ import javax.swing.JTextField;
 public class Controller extends JFrame   implements MouseListener{
 	
 	private boolean debugging = false;
-	private boolean halfsize = true;
+	private boolean halfsize = false;
 	
 	private boolean gameInitialized = false;
 	private int points;
@@ -160,14 +163,7 @@ public class Controller extends JFrame   implements MouseListener{
 		Graphics g = startMenu.getGraphics();
 		
 		JTextField vars = new JTextField("  # of variables");
-		vars.setBounds(width/2-175, 50, 100, 32);
-		startMenu.add(vars);
-		vars.setColumns(10);
-		
 		JTextField size = new JTextField(" size of a set");
-		size.setBounds(width/2-50, 50, 100, 32);
-		startMenu.add(size);
-		vars.setColumns(10);
 		
 		//g.drawString("Please enter the following values and click 'create'",width/2-75,70);
 		
@@ -184,31 +180,37 @@ public class Controller extends JFrame   implements MouseListener{
 				}catch(Exception broke)
 				{
 					numberOfVariables = 4;
+					JOptionPane.showMessageDialog(null, "Please enter an integer next time. Due to you entering a non-integer, your deck has defaulted to " +numberOfVariables+ " variables.");
 				}
 				try{
 					cardsToASet = Integer.parseInt( size.getText() );
 				}catch(Exception broke)
 				{
 					cardsToASet = 3; 
+					JOptionPane.showMessageDialog(null, "Please enter an integer next time. Due to you entering a non-integer, your deck has defaulted to "+cardsToASet+" cards to a set.");
 				}
 				//make sure they're within the allowable bounds
 				// up to Card.numberOfVariablesAvailable
 				if(numberOfVariables>Card.numberOfVariablesAvailable)
 				{
 					numberOfVariables = Card.numberOfVariablesAvailable;
+					JOptionPane.showMessageDialog(null, "That's too many variables. You have been restricted to "+numberOfVariables+" variables.");
 				}
 				if(numberOfVariables<1)
 				{
 					numberOfVariables = 1;
+					JOptionPane.showMessageDialog(null, "You must have at least one variable. We have increased your selection to \"1\".");
 				}
 				// 3, 4, or 5
 				if(cardsToASet>5)
 				{
 					cardsToASet = 5;
+					JOptionPane.showMessageDialog(null, "You may not have more than five cards to a set. We have decreased your selection to \"5\".");
 				}
 				if(cardsToASet<3)
 				{
 					cardsToASet = 3;
+					JOptionPane.showMessageDialog(null, "You must have at least three cards to a set. We have increased your selection to \"3\".");
 				}
 				
 				int[][] v = new int[numberOfVariables][cardsToASet];
@@ -240,46 +242,71 @@ public class Controller extends JFrame   implements MouseListener{
 					public void mouseClicked(MouseEvent e) 
 					{
 						//TODO
-						// have the user select options for each variable except for numbers, which are automatically assigned based on how many cards there are to a set
-						// (for example: if there are three cards to a set, the user will now select three colors, three shapes, three shadings, etc.)
-						// The selected variables should be represented in the v array as integers.
-						// (you can call things such as Card.SQUARE, Card.colors[i] and other public Card variables as a reference)
-						int count = 0;
+						// have the user be able to select the shown options
+						
 						//for each variable, choose options for each card in a set
+						int w = 30;
+						int h = 30;
+						int r = 4;
+						int count = 0;
 						for(int i = 0 ; i<numberOfVariables; i++)
 						{
-							for(int j = 0; j<cardsToASet; j++)
+							if(i==Card.COLOR)
 							{
-								if(i==Card.COLOR)
+								g.drawString("Please choose "+cardsToASet+" colors:", 100+count*(r*(w+15)+(w+20)), 230);
+								Color currentColor = g.getColor();
+								for(int c = 0; c<Card.colors.length; c++)
 								{
-									JComboBox<Color> style = new JComboBox<Color>();
-									for(int c = 0; c<Card.colors.length; c++)
-									{
-										style.addItem(Card.colors[c]);
-									}
+									g.setColor(Card.colors[c]);
+									g.fillRect( 100 + count*(r*(w+15)+(w+20)) + c%r*(w+15)  , 250+c/r*(w+15), w, h);
 								}
-								if(i==Card.NUMBER)
+								g.setColor(currentColor);
+							}
+							if(i==Card.NUMBER)
+							{
+								;
+							}
+							if(i==Card.SHAPE)
+							{
+								g.drawString("Please choose "+cardsToASet+" shapes:", 100+count*(r*(w+15)+(w+20)), 230);
+								for(int s = 0; s<Card.numberOfShapesAvailable; s++)
 								{
-									;
-								}
-								if(i==Card.SHAPE)
-								{
-									
-								}
-								if(i==Card.FILL)
-								{
-									
-								}
-								if(i==Card.BORDER)
-								{
-									
+									Card.drawshape(g, s, 100 + count*(r*(w+15)+(w+20)) + s%r*(w+15)  , 250+s/r*(w+15), w, h);
 								}
 							}
-							
-							count++;
+							if(i==Card.FILL)
+							{
+								g.drawString("Please choose "+cardsToASet+" fills:", 100+count*(r*(w+15)+(w+20)), 230);
+								for(int f = 0; f<Card.numberOfFillsAvailable; f++)
+								{
+									Card.drawfill(g, f, 100 + count*(r*(w+15)+(w+20)) + f%r*(w+15)  , 250+f/r*(w+15), w, h);
+								}
+								
+							}
+							if(i==Card.BORDER)
+							{
+								g.drawString("Please choose "+cardsToASet+" border colors:", 100+count*(r*(w+15)+(w+20)), 230);
+								Color currentColor = g.getColor();
+								for(int c = 0; c<Card.colors.length; c++)
+								{
+									g.setColor(Card.colors[c]);
+									Graphics2D g2 = (Graphics2D) g;
+									Stroke defaultStroke = g2.getStroke();
+									Stroke thickStroke = new BasicStroke(w/10);
+									g2.setStroke(thickStroke);
+									g2.drawRoundRect( 100 + count*(r*(w+15)+(w+20)) + c%r*(w+15)  , 250+c/r*(w+15), w, h,w/5,h/5);
+									g2.setStroke(defaultStroke);
+								}
+								g.setColor(currentColor);
+							}
+								
+							if(i!= Card.NUMBER)
+							{
+								count++;
+							}
 						}
-						 initialize(numberOfVariables,cardsToASet,v);
-						 startMenu.dispose();
+						 //initialize(numberOfVariables,cardsToASet,v);
+						 //startMenu.dispose();
 					}
 				});
 				
@@ -292,7 +319,15 @@ public class Controller extends JFrame   implements MouseListener{
 			}
 		});
 		
-		create.setBounds(width/2+75, 50, 200, 32);
+		vars.setBounds(width/2-250, 50, 100, 32);
+		startMenu.add(vars);
+		vars.setColumns(10);
+		
+		size.setBounds(width/2-100, 50, 100, 32);
+		startMenu.add(size);
+		vars.setColumns(10);
+		
+		create.setBounds(width/2+50, 50, 200, 32);
 		startMenu.add(create);
 	}
 	

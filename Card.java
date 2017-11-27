@@ -637,8 +637,108 @@ public class Card {
 		  g.setFont(current);
 	  }
 	  g.setColor(currentColor);
-  }
+  }//end draw
   
+  
+  public static void drawshape(Graphics g, int shape, int x, int y, int width, int height)
+  {
+	  if(shape == MOUNTAINS)
+	  {
+		  int[][]xPoints = {
+				  {x,x+width/5*3,(x+x+width/5*3)/2},
+				  {x+width/5*2,x+width,(x+width/5*2+x+width)/2},
+				  {x+width/5*1,x+width/5*4,(x+width/5*1+x+width/5*4)/2}};
+		  int[][]yPoints = {
+				  {y+height/7*6 , y+height/7*6 , y},
+				  {y+height/7*5 , y+height/7*5 , y+height/7*2},
+				  {y+height , y+height , y+height/7}};
+		  
+		  Color temp = g.getColor();
+		  
+		  for(int triangle = 0; triangle < 3; triangle++)
+		  {
+			  g.fillPolygon(xPoints[triangle], yPoints[triangle], 3);
+			  g.setColor(Color.white);
+			  g.drawPolygon(xPoints[triangle], yPoints[triangle], 3);
+			  g.setColor(temp);
+		  }
+	  }
+	  if(shape == DIAMOND)
+	  {
+		  int[] xPoints = {x, x+width/2 , x+width, x+width/2 };
+		  int[] yPoints = {y+height/2 , y, y+height/2 , y+height};
+		  g.fillPolygon(xPoints,yPoints,4);
+	  }
+	  if(shape == HOURGLASS)
+	  {
+		  int[] xPoints = {x, x+width , x, x+width };
+		  int[] yPoints = {y , y, y+height , y+height};
+		  g.fillPolygon(xPoints,yPoints,4);
+	  }
+	  if(shape == BOWTIE)
+	  {
+		  int[] xPoints = {x, x, x+width , x+width };
+		  int[] yPoints = {y, y+height , y , y+height};
+		  g.fillPolygon(xPoints,yPoints,4);
+	  }
+	  if(shape == TRIANGLE)
+	  {
+		  int[] xPoints = {x, x+width, x+(width/2)};
+		  int[] yPoints = {y+height , y+height , y};
+		  g.fillPolygon(xPoints,yPoints,3);
+	  }
+	  if(shape == SQUARE)
+	  {
+		  g.fillRect(x, y, width, height);
+	  }
+	  if(shape == CIRCLE)
+	  {
+		  g.fillOval(x, y, width, height);
+	  }
+  }// end drawshape
+  
+  public static void drawfill(Graphics g, int fill, int x, int y, int width, int height)
+  {
+	  Color current = g.getColor();
+	  if(fill == OUTLINE)
+	  {
+		  g.drawRect(x, y, width, height);
+	  }
+	  if(fill == SOLID)
+	  {
+		  g.fillRect(x, y, width, height);
+	  }
+	  if(fill == STRIPED)
+	  {
+		  int numberOfStripes=width/5*2;
+		  int xDistance = width/(numberOfStripes/2);
+		  int yDistance = height/(numberOfStripes/2);
+		  for(int j = 1; j<=numberOfStripes/2; j++)
+		  {
+			  g.drawLine(x+j*xDistance , y , x , y+j*yDistance);
+			  g.drawLine(x+j*xDistance , y+height , x+width , y+j*yDistance);
+		  }
+		  g.drawRect(x, y, width, height);
+	  }
+	  if(fill == GRADIENT)
+	  {
+		  GradientPaint gp = new GradientPaint(x, y, g.getColor(), x+width, y+height, Color.white) ; //(x,y,Color,x2,y2,Color)
+		  Graphics2D g2d = (Graphics2D) g;
+		  g2d.setPaint(gp);
+		  g2d.fillRect(x, y, width, height);
+	  }
+	  if(fill == THICK_OUTLINE)
+	  {
+		  Graphics2D g2 = (Graphics2D) g;
+		  Stroke defaultStroke = g2.getStroke();
+		  Stroke thickStroke = new BasicStroke(width/15);
+		  g2.setStroke(thickStroke);
+		  g.drawRect(x, y, width, height);//outline
+		  g2.setStroke(defaultStroke);
+	  }
+	  g.drawRect(x, y, width, height);
+	  g.setColor(current);
+  }
   
   
   public void select()
