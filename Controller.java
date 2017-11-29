@@ -78,40 +78,8 @@ public class Controller extends JFrame   implements MouseListener{
 	
 	private void start()
 	{
-		//TODO start menu
-		
-		//TODO have the user choose how many variables and how many cards to a set
-		int variables = 4; // up to Card.numberOfVariablesAvailable
-		int setSize = 3; // 3, 4, or 5
-		
-		int[][] v = new int[variables][setSize];
-		
-		//TODO have the user choose whether to go with the default or to customize their deck
-		boolean custom = false;
-		
-		if(custom)
-		{
-			//TODO
-			// have the user select options for each variable except for numbers, which are automatically assigned based on how many cards there are to a set
-			// (for example: if there are three cards to a set, the user will now select three colors, three shapes, three shadings, etc.)
-			// The selected variables should be represented in the v array as integers.
-			// (you can call things such as Card.SQUARE, Card.colors[i] and other public Card variables as a reference)
-			
-		}
-		else //default
-		{
-			for(int i = 0; i<variables; i++)
-			{
-				for(int j = 0; j<setSize; j++)
-				{
-					v[i][j]= (i==Card.NUMBER?(j+1):(j)); //if this is the NUMBER variable, set this to j+1, else set this to j. That way all variables but NUMBER go from 0 to setSize-1 and NUMBER goes from 1 to setSize
-				}
-			}
-		}
 		
 		
-        initialize(variables,setSize,v);
-        repaint();
 	}
 	
 	private void initialize(int variables, int setSize, int[][] v)
