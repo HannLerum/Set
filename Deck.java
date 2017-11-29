@@ -123,6 +123,10 @@ public class Deck {
 		return NUMBER_OF_CARDS;
 	}
 	
+	public void reset()
+	{
+		currentCard = 0;
+	}
 
 	
 }
