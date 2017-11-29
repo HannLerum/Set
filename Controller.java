@@ -16,6 +16,8 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import java.awt.*;
+import javax.swing.*;
 
 public class Controller extends JFrame   implements MouseListener{
 	
@@ -149,7 +151,6 @@ public class Controller extends JFrame   implements MouseListener{
 		
 		gameInitialized = false;
 		
-		//TODO start menu
 		//set up the JFrame
 		Container startContent;
 		JFrame startMenu = new JFrame();
@@ -241,11 +242,53 @@ public class Controller extends JFrame   implements MouseListener{
 					@Override
 					public void mouseClicked(MouseEvent e) 
 					{
-						//TODO
-						// have the user be able to select the shown options
+						//TODO have the user be able to select the shown options
 						
 						//for each variable, choose options for each card in a set
-						int w = 30;
+						
+						JComboBox[][] choices = new JComboBox[numberOfVariables][cardsToASet];
+						for(int i = 0 ; i<numberOfVariables; i++)
+						{
+							for(int j = 0; j<cardsToASet; j++)
+							{
+								if(i==Card.COLOR)
+								{
+									choices[i][j] = new JComboBox<Color>();
+									for(int c = 0; c<Card.numberOfColorsAvailable; c++)
+									{
+										ImageIcon im = new ImageIcon();
+										Image m = im.getImage();
+										Graphics graphics = m.getGraphics();
+										graphics.setColor(Card.colors[c]);
+										graphics.fillRect(0, 0, 20,20);
+									}
+								}
+								if(i==Card.NUMBER)
+								{
+									;
+								}
+								if(i==Card.SHAPE)
+								{
+									
+								}
+								if(i==Card.FILL)
+								{
+									
+								}
+								if(i==Card.BORDER)
+								{
+									
+								}
+							}
+						}
+						
+						
+						
+						
+						
+						
+						
+						/*int w = 30;
 						int h = 30;
 						int r = 4;
 						int count = 0;
@@ -304,7 +347,8 @@ public class Controller extends JFrame   implements MouseListener{
 							{
 								count++;
 							}
-						}
+							
+						}*/
 						 //initialize(numberOfVariables,cardsToASet,v);
 						 //startMenu.dispose();
 					}
@@ -481,7 +525,6 @@ public class Controller extends JFrame   implements MouseListener{
 						}
 					}
 				}
-			System.out.println(numberOfSets);
 			return numberOfSets;
 		}
 		else if(cardsToASet==4)
@@ -599,7 +642,16 @@ public class Controller extends JFrame   implements MouseListener{
 			numberOfCardsOnTheTable++;
 			if(!added)//room wasn't found
 			{
-				throw new IllegalArgumentException("Tried to deal more cards than can fit on the table.");
+				//TODO Tell the user
+				//clear the table
+				for(int c = 0; c<cardsOnTable.length; c++)
+				{
+					cardsOnTable[c]=null;
+				}
+				//shuffle the deck
+				myDeck.shuffle();
+				//deal to the table again
+				dealTilFull();
 			}
 		}
 	}
