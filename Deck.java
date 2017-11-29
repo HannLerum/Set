@@ -97,7 +97,15 @@ public class Deck {
 	{
 		if(currentCard < deck.length)
 		{
-			return deck[currentCard++];
+			if(!deck[currentCard].isSelected())
+			{
+				return deck[currentCard++];
+			}
+			else
+			{
+				currentCard++;
+				return deal();
+			}
 		}
 		else
 		{

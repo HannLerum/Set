@@ -1,3 +1,4 @@
+//"Fine, this is a sarcasm" Hann "Flyin" Solo
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -220,48 +221,81 @@ public class Controller extends JFrame   implements MouseListener{
 		if(!gameInitialized)
 	  		{throw new IllegalArgumentException("game has not been initialized");}
 		
-		Card [] tablecards = new Card [tableCards.length];
+		//Card [] tablecards = new Card [tableCards.length];
 		Card [] test = new Card[setSize];
 		int[] placeOnTable = new int[setSize];
-		boolean endWhile = true;
-		boolean notDone= true;
+
 		int numberOfSets = 0;
 		int current=setSize-1; //the spot in place on table that is getting incremented
-		int marker=current-1;	//this int remembers where current started
-		int end=tablecards.length; //this is just a convenient shortcut so that I do not have to write tablecards.length everytime
+
+		int end=numberOfCardsOnTheTable; //this is just a convenient shortcut so that I do not have to write tablecards.length everytime
 		
 		for(int x =0; x<test.length; x++)
 				{placeOnTable[x]=x;}
-		while(placeOnTable[0]>=end-setSize+current)
+		while(placeOnTable[0]<=end-setSize+current)
 		{	
 			while(placeOnTable[current]<end)
 			{
+				
+//				for(int i=0; i<placeOnTable.length; i++)
+//				{
+//					System.out.println(placeOnTable[i]);
+//				}
+				
 				for(int x=0; x<test.length; x++)
-					{test[x] = tablecards[placeOnTable[x]];}
+					{test[x] = new Card();
+					test[x] = tableCards[placeOnTable[x]];
+					//System.out.println(tablecards[placeOnTable[x]].toString());
+					//System.out.println(placeOnTable[x]);
+					//System.out.println(tableCards[x].toString());
+					//System.out.println(test[x].toString());
+					}
+				
 				if (isASet(test))
-					{numberOfSets++;}
+					{numberOfSets++;
+					System.out.println("sets so far" + numberOfSets);
+					for (int i =0; i<3; i++)
+						{
+							System.out.println(placeOnTable[i]);
+						}
+						}
 				placeOnTable[current]++;
-			
+				//System.out.println(" ");
+				
+				//System.out.println(" ");
 			}
-			while (placeOnTable[current]<end-setSize+current&&current>0)
+//			System.out.println("end");
+//			System.out.println(end);
+//			System.out.println("Current");
+//			System.out.println(current);
+//			System.out.println(" pl o cur");
+//			System.out.println(placeOnTable[current]);
+//			System.out.println(" end -");
+//			System.out.println(end-setSize+current);
+			while ((placeOnTable[current]>=end-setSize+current)&&current>0)
 			{
 				current--;
 			}
 			placeOnTable[current]++;
-			int inc =1;
 			for(int x=current+1;x<setSize;x++)
-				placeOnTable[x] = placeOnTable[x-1]+1;
+				{placeOnTable[x] = placeOnTable[x-1]+1;}
 			current = setSize-1;
 		}
+		System.out.println("num of s"+numberOfSets);
 		return numberOfSets;
 		
 	}
 	
 	private boolean isASet(Card[] cards)
 	{
+		//System.out.println("we arrived");
 		if(!gameInitialized)
   			{throw new IllegalArgumentException("game has not been initialized");}
-		
+		/*for(int i=0; i<cards.length; i++)
+			{
+			System.out.println(i);	
+			System.out.println(cards[i].toString());
+			}*/
 		boolean isASet = true;
 		//if the number of cards passed in is incorrect
 		if(cards.length!=cardsToASet)
@@ -290,7 +324,7 @@ public class Controller extends JFrame   implements MouseListener{
 			{
 				v[(i==Card.NUMBER?(cards[j].getVariable(i)-1):(cards[j].getVariable(i)))]++;
 			}
-			
+			//check to see if you do not have a set
 			for(int k = 0 ; k<cardsToASet ; k ++)
 			{
 				if( v[k]>=2 && v[k]!=cardsToASet )
@@ -306,7 +340,12 @@ public class Controller extends JFrame   implements MouseListener{
 				 */
 			}
 		}
-		
+		if (isASet)
+		{for(int i=0; i<cards.length; i++)
+			{
+				System.out.println(cards[i].toString());
+			}
+		}
 		return isASet;
 	}
 	
@@ -361,7 +400,15 @@ public class Controller extends JFrame   implements MouseListener{
 			numberOfCardsOnTheTable++;
 			if(!added)//room wasn't found
 			{
-				throw new IllegalArgumentException("Tried to deal more cards than can fit on the table.");
+				//throw new IllegalArgumentException("Tried to deal more cards than can fit on the table.");
+				for(int c=0; c<cardsOnTable.length; c++)
+				{
+					cardsOnTable[c]=null;
+				}
+				//shuffle the deck
+				myDeck.shuffle();
+				//deal to the table again
+				dealTilFull();
 			}
 		}
 	}
