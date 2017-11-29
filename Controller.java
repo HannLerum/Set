@@ -148,7 +148,6 @@ public class Controller extends JFrame   implements MouseListener{
 	private void start()
 	{
 		
-		
 		gameInitialized = false;
 		
 		//set up the JFrame
@@ -281,9 +280,6 @@ public class Controller extends JFrame   implements MouseListener{
 								}
 							}
 						}
-						
-						
-						
 						
 						
 						
@@ -496,51 +492,7 @@ public class Controller extends JFrame   implements MouseListener{
 	
 	private int howManySets(Card[] tableCards)
 	{
-		if(!gameInitialized)
-	  		{throw new IllegalArgumentException("game has not been initialized");}
 		
-		Card [] tablecards = new Card [tableCards.length];
-		Card [] test = new Card[3];
-		int numberOfSets = 0;
-		for (int i = 0; i<tableCards.length; i++)
-		{
-			tablecards[i] = tableCards[i];
-		}
-		
-		if(cardsToASet ==3 )
-		{
-			
-			for(int card1=0;card1<tableCards.length-2; card1++)
-				{
-				for(int card2=card1+1;card2<tableCards.length-1; card2++)
-					{
-					for(int card3=card2+1;card3<tableCards.length; card3++)
-						{
-						test[0] = tablecards[card1];
-						test[1] = tablecards[card2];
-						test[2] = tablecards[card3];
-						if (isASet(test)==true)
-							{numberOfSets++;}
-						//System.out.println(numberOfSets);
-						}
-					}
-				}
-			return numberOfSets;
-		}
-		else if(cardsToASet==4)
-		{
-			return 1;
-		}
-		else if(cardsToASet==5)
-		{
-			return 1;
-		}
-		else
-		{
-			return 1;
-		}
-		
-		//return 1;
 	}
 	
 	private boolean isASet(Card[] cards)
