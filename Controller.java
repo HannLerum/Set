@@ -255,11 +255,9 @@ public class Controller extends JFrame   implements MouseListener{
 									choices[i][j] = new JComboBox<Color>();
 									for(int c = 0; c<Card.numberOfColorsAvailable; c++)
 									{
+										//TODO make this work
 										ImageIcon im = new ImageIcon();
-										Image m = im.getImage();
-										Graphics graphics = m.getGraphics();
-										graphics.setColor(Card.colors[c]);
-										graphics.fillRect(0, 0, 20,20);
+										im.paintIcon(c, g, x, y);
 									}
 								}
 								if(i==Card.NUMBER)
@@ -492,7 +490,7 @@ public class Controller extends JFrame   implements MouseListener{
 	
 	private int howManySets(Card[] tableCards)
 	{
-		
+		return 1;
 	}
 	
 	private boolean isASet(Card[] cards)
