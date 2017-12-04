@@ -107,11 +107,11 @@ public class Controller extends JFrame   implements MouseListener{
 					Color currentColor = g.getColor();
 					g.setColor(Color.white);
 					g.setFont(new Font(null, Font.CENTER_BASELINE, 50) );
-					g.fillRoundRect(width/4, height/4, 550, 200, 10, 10);
+					g.fillRoundRect(width/2-120, height/4, 500, 150, 10, 10);
 					g.setColor(Color.magenta);
-					g.drawString("There is at least one", width/4+15 ,height/4+65);
-					g.drawString("set on the table.", width/4+15 ,height/4+65+50);
-					g.drawString("Not telling you where.", width/4+15 ,height/4+65+100);
+					int howMany = howManySets(cardsOnTable,cardsToASet);
+					g.drawString( ("There "+(howMany==1?"is ":"are ")+howMany), width/2-100 ,height/4+65);
+					g.drawString("set"+(howMany==1?" ":"s ")+" on the table.", width/2-100 ,height/4+65+50);
 					g.setFont(current);
 					g.setColor(currentColor);
 				}
@@ -162,226 +162,219 @@ public class Controller extends JFrame   implements MouseListener{
         startContent.setLayout(null); // not need layout, will use absolute system
 		Graphics g = startMenu.getGraphics();
 		
-		JTextField vars = new JTextField("  # of variables");
-		JTextField size = new JTextField(" size of a set");
+		//choose the deck size
+		JComboBox<String> vars = new JComboBox<String>();
+		vars.addItem("# of variables");
+		for(int v = 1; v<=Card.numberOfVariablesAvailable;v++)
+		{
+			vars.addItem(v+"");
+		}
+		JComboBox<String> size = new JComboBox<String>();
+		size.addItem("Size of a SET");
+		for(int s = 3; s<=5; s++)
+		{
+			size.addItem(s+"");
+		}
 		
-		g.drawString("Please enter the following values and click 'create'",width/2-75,70);
+		//have the user choose whether to go with the default or to customize their deck
+		JButton defaultDeck = new JButton("Default Deck");
+		JButton customDeck = new JButton("Custom Deck");
 		
-		JButton create = new JButton("Select Deck Parameters");
-		create.addMouseListener(new MouseAdapter()
+		defaultDeck.addMouseListener(new MouseAdapter()
 		{
 			@Override
 			public void mouseClicked(MouseEvent e) 
 			{
-				
-				//try to set the variables to what the user chose but if they did a stupid or tried to break it then just make them the defaults.
-				try{
-					numberOfVariables = Integer.parseInt( vars.getText() );
-				}catch(Exception broke)
+				//set to selected values
+				if(vars.getSelectedIndex()==0)
 				{
 					numberOfVariables = 4;
-					JOptionPane.showMessageDialog(null, "Please enter an integer next time. Due to you entering a non-integer, your deck has defaulted to " +numberOfVariables+ " variables.");
 				}
-				try{
-					cardsToASet = Integer.parseInt( size.getText() );
-				}catch(Exception broke)
+				else
 				{
-					cardsToASet = 3; 
-					JOptionPane.showMessageDialog(null, "Please enter an integer next time. Due to you entering a non-integer, your deck has defaulted to "+cardsToASet+" cards to a set.");
+					numberOfVariables = Integer.parseInt((String)vars.getSelectedItem());
 				}
-				//make sure they're within the allowable bounds
-				// up to Card.numberOfVariablesAvailable
-				if(numberOfVariables>Card.numberOfVariablesAvailable)
+				if(size.getSelectedIndex()==0)
 				{
-					numberOfVariables = Card.numberOfVariablesAvailable;
-					JOptionPane.showMessageDialog(null, "That's too many variables. You have been restricted to "+numberOfVariables+" variables.");
+					cardsToASet = 4;
 				}
-				if(numberOfVariables<1)
+				else
 				{
-					numberOfVariables = 1;
-					JOptionPane.showMessageDialog(null, "You must have at least one variable. We have increased your selection to \"1\".");
+					cardsToASet = Integer.parseInt((String)size.getSelectedItem());
 				}
-				// 3, 4, or 5
-				if(cardsToASet>5)
-				{
-					cardsToASet = 5;
-					JOptionPane.showMessageDialog(null, "You may not have more than five cards to a set. We have decreased your selection to \"5\".");
-				}
-				if(cardsToASet<3)
-				{
-					cardsToASet = 3;
-					JOptionPane.showMessageDialog(null, "You must have at least three cards to a set. We have increased your selection to \"3\".");
-				}
-				
 				variables = new int[numberOfVariables][cardsToASet];
 				
-				//have the user choose whether to go with the default or to customize their deck
-				JButton defaultDeck = new JButton("Default Deck");
-				JButton customDeck = new JButton("Custom Deck");
-				
-				defaultDeck.addMouseListener(new MouseAdapter()
+				for(int i = 0; i<numberOfVariables; i++)
 				{
-					@Override
-					public void mouseClicked(MouseEvent e) 
+					for(int j = 0; j<cardsToASet; j++)
 					{
-						for(int i = 0; i<numberOfVariables; i++)
-						{
-							for(int j = 0; j<cardsToASet; j++)
-							{
-								variables[i][j]= (i==Card.NUMBER?(j+1):(j)); //if this is the NUMBER variable, set this to j+1, else set this to j. That way all variables but NUMBER go from 0 to setSize-1 and NUMBER goes from 1 to setSize
-								System.out.print(variables[i][j]+" ");
-							}
-							System.out.println();
-						}
-						initialize(numberOfVariables,cardsToASet,variables);
-						startMenu.dispose();
+						variables[i][j]= (i==Card.NUMBER?(j+1):(j)); //if this is the NUMBER variable, set this to j+1, else set this to j. That way all variables but NUMBER go from 0 to setSize-1 and NUMBER goes from 1 to setSize
+						System.out.print(variables[i][j]+" ");
 					}
-				});
-				
-				customDeck.addMouseListener(new MouseAdapter()
-				{
-					@Override
-					public void mouseClicked(MouseEvent e) 
-					{
-						int w = 30;
-						int h = 30;
-						
-						//for each variable, choose options for each card in a set
-						
-						JComboBox[][] choices = new JComboBox[numberOfVariables][cardsToASet];
-						for(int variable = 0 ; variable<numberOfVariables; variable++)
-						{
-							for(int card = 0; card<cardsToASet; card++)
-							{
-								if(variable== Card.COLOR)
-								{
-									choices[variable][card] = new JComboBox<ColorIcon>();
-									for(int color = 0; color<Card.numberOfColorsAvailable; color++)
-									{
-										choices[variable][card].addItem(new ColorIcon(w,h,Card.colors[color]));
-									}
-								}
-								else if(variable==Card.NUMBER)
-								{
-									choices[variable][card] = new JComboBox<Integer>();
-									for(int number = 1 ; number < cardsToASet+1; number++)
-									{
-										choices[variable][card].addItem(number);
-									}
-								}
-								else if(variable==Card.SHAPE)
-								{
-									choices[variable][card] = new JComboBox<ShapeIcon>();
-									for(int shape = 0; shape<Card.numberOfShapesAvailable; shape++)
-									{
-										choices[variable][card].addItem(new ShapeIcon(w,h,shape));
-									}
-								}
-								else if(variable==Card.FILL)
-								{
-									choices[variable][card] = new JComboBox<FillIcon>();
-									for(int fill = 0; fill<Card.numberOfFillsAvailable; fill++)
-									{
-										choices[variable][card].addItem(new FillIcon(w,h,fill));
-									}
-								}
-								else if(variable==Card.BORDER)
-								{
-									
-									choices[variable][card] = new JComboBox<BorderIcon>();
-									for(int border = 0 ; border<Card.numberOfBorderColorsAvailable; border++)
-									{
-										choices[variable][card].addItem(new BorderIcon(w,h,Card.colors[border]));
-									}
-								}
-								
-								choices[variable][card].setSelectedIndex(card);//have each JComboBox for this variable select a different value by default.
-								choices[variable][card].setBounds(width/2-(numberOfVariables*(w+80)/2)+variable*(w+80), 200+card*(h*2), w+40, h+10);
-								startMenu.add(choices[variable][card]);
-							}//end for
-						}//end for
-						g.drawString("Please select your variables.", width/2-200, 150);
-						
-						JButton ready = new JButton("Ready");
-
-						ready.addMouseListener(new MouseAdapter()
-						{
-							@Override
-							public void mouseClicked(MouseEvent e) 
-							{
-								//check to make sure that no duplicates exist
-								boolean noDuplicates = true;
-								for(int variable = 0; variable<numberOfVariables && noDuplicates; variable++)
-								{
-									for(int card = 0; card<cardsToASet && noDuplicates;card++)
-									{
-										for(int check = 0; check<card && noDuplicates; check++)
-										{
-											if(choices[variable][card].getSelectedIndex()==(choices[variable][check].getSelectedIndex()))
-											{
-												noDuplicates = false;
-												//System.out.println("User attempted a duplicate in variable "+variable+" at options "+check+" and "+card+": "+choices[variable][card].getSelectedIndex());
-											}
-										}
-									}
-								}
-								
-								if(noDuplicates)
-								{
-									largestVariable = 0;
-									//copy all the things to variables double array
-									for(int variable = 0; variable<numberOfVariables; variable++)
-									{
-										for(int card = 0; card<cardsToASet;card++)
-										{
-											int v = choices[variable][card].getSelectedIndex()+(variable==Card.NUMBER?1:0);//grab the value of the variable (increase by 1 if it's a number
-											variables[variable][card] = v;//put it in the variables array
-											if(v>largestVariable)//if this variable is bigger than the current biggest
-											{
-												largestVariable = v;//it is now the current biggest.
-											}
-											System.out.print(v+" ");
-										}
-										System.out.println();
-									}
-									
-									initialize(numberOfVariables,cardsToASet,variables);
-									startMenu.dispose();
-								}
-								else//there is a duplicate
-								{
-									//scold the user. They cannot select the same variable twice. (cannot select light pink twice, cannot select 'solid' twice)
-									g.drawString("You cannot use duplicate values!", width/2-50, 200+cardsToASet*(h*2)+30);
-									//System.out.println("Bad user. No duplicates allowed.");
-								}
-							}
-						});
-						ready.setBounds(width/2-50,200+cardsToASet*(h*2)+50,100,40);
-						startMenu.add(ready);
-						startMenu.setVisible(false);
-						startMenu.setVisible(true);
-					}//end mouseclicked
-				});
-				
-				defaultDeck.setBounds(width/2-200, 100, 150, 32);
-				customDeck.setBounds(width/2+50, 100, 150, 32);
-				startMenu.add(defaultDeck);
-				startMenu.add(customDeck);
-				startMenu.setVisible(false);
-				startMenu.setVisible(true);
+					System.out.println();
+				}
+				initialize(numberOfVariables,cardsToASet,variables);
+				startMenu.dispose();
 			}
 		});
 		
-		vars.setBounds(width/2-250, 50, 100, 32);
+		customDeck.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked(MouseEvent e) 
+			{
+				//set to selected values
+				if(vars.getSelectedIndex()==0)
+				{
+					numberOfVariables = 4;
+				}
+				else
+				{
+					numberOfVariables = Integer.parseInt((String)vars.getSelectedItem());
+				}
+				if(size.getSelectedIndex()==0)
+				{
+					cardsToASet = 4;
+				}
+				else
+				{
+					cardsToASet = Integer.parseInt((String)size.getSelectedItem());
+				}
+				variables = new int[numberOfVariables][cardsToASet];
+				
+				int w = 30;
+				int h = 30;
+				
+				//for each variable, choose options for each card in a set
+				
+				JComboBox[][] choices = new JComboBox[numberOfVariables][cardsToASet];
+				for(int variable = 0 ; variable<numberOfVariables; variable++)
+				{
+					for(int card = 0; card<cardsToASet; card++)
+					{
+						if(variable== Card.COLOR)
+						{
+							choices[variable][card] = new JComboBox<ColorIcon>();
+							for(int color = 0; color<Card.numberOfColorsAvailable; color++)
+							{
+								choices[variable][card].addItem(new ColorIcon(w,h,Card.colors[color]));
+							}
+						}
+						else if(variable==Card.NUMBER)
+						{
+							choices[variable][card] = new JComboBox<Integer>();
+							for(int number = 1 ; number < cardsToASet+1; number++)
+							{
+								choices[variable][card].addItem(number);
+							}
+						}
+						else if(variable==Card.SHAPE)
+						{
+							choices[variable][card] = new JComboBox<ShapeIcon>();
+							for(int shape = 0; shape<Card.numberOfShapesAvailable; shape++)
+							{
+								choices[variable][card].addItem(new ShapeIcon(w,h,shape));
+							}
+						}
+						else if(variable==Card.FILL)
+						{
+							choices[variable][card] = new JComboBox<FillIcon>();
+							for(int fill = 0; fill<Card.numberOfFillsAvailable; fill++)
+							{
+								choices[variable][card].addItem(new FillIcon(w,h,fill));
+							}
+						}
+						else if(variable==Card.BORDER)
+						{
+							
+							choices[variable][card] = new JComboBox<BorderIcon>();
+							for(int border = 0 ; border<Card.numberOfBorderColorsAvailable; border++)
+							{
+								choices[variable][card].addItem(new BorderIcon(w,h,Card.colors[border]));
+							}
+						}
+						
+						choices[variable][card].setSelectedIndex(card);//have each JComboBox for this variable select a different value by default.
+						choices[variable][card].setBounds(width/2-(numberOfVariables*(w+80)/2)+variable*(w+80), 200+card*(h*2), w+40, h+10);
+						startMenu.add(choices[variable][card]);
+					}//end for
+				}//end for
+				g.drawString("Please select your variables.", width/2-200, 150);
+				
+				JButton ready = new JButton("Ready");
+
+				ready.addMouseListener(new MouseAdapter()
+				{
+					@Override
+					public void mouseClicked(MouseEvent e) 
+					{
+						//check to make sure that no duplicates exist
+						boolean noDuplicates = true;
+						for(int variable = 0; variable<numberOfVariables && noDuplicates; variable++)
+						{
+							for(int card = 0; card<cardsToASet && noDuplicates;card++)
+							{
+								for(int check = 0; check<card && noDuplicates; check++)
+								{
+									if(choices[variable][card].getSelectedIndex()==(choices[variable][check].getSelectedIndex()))
+									{
+										noDuplicates = false;
+										//System.out.println("User attempted a duplicate in variable "+variable+" at options "+check+" and "+card+": "+choices[variable][card].getSelectedIndex());
+									}
+								}
+							}
+						}
+						
+						if(noDuplicates)
+						{
+							largestVariable = 0;
+							//copy all the things to variables double array
+							for(int variable = 0; variable<numberOfVariables; variable++)
+							{
+								for(int card = 0; card<cardsToASet;card++)
+								{
+									int v = choices[variable][card].getSelectedIndex()+(variable==Card.NUMBER?1:0);//grab the value of the variable (increase by 1 if it's a number
+									variables[variable][card] = v;//put it in the variables array
+									if(v>largestVariable)//if this variable is bigger than the current biggest
+									{
+										largestVariable = v;//it is now the current biggest.
+									}
+									System.out.print(v+" ");
+								}
+								System.out.println();
+							}
+							
+							initialize(numberOfVariables,cardsToASet,variables);
+							startMenu.dispose();
+						}
+						else//there is a duplicate
+						{
+							//scold the user. They cannot select the same variable twice. (cannot select light pink twice, cannot select 'solid' twice)
+							g.drawString("You cannot use duplicate values!", width/2-50, 200+cardsToASet*(h*2)+30);
+							//System.out.println("Bad user. No duplicates allowed.");
+						}
+					}
+				});
+				ready.setBounds(width/2-50,200+cardsToASet*(h*2)+50,100,40);
+				startMenu.add(ready);
+				startMenu.setVisible(false);
+				startMenu.setVisible(true);
+			}//end mouseclicked
+		});
+		
+		defaultDeck.setBounds(width/2-200, 100, 150, 32);
+		customDeck.setBounds(width/2+50, 100, 150, 32);
+		startMenu.add(defaultDeck);
+		startMenu.add(customDeck);
+		
+		vars.setBounds(width/2-175, 50, 150, 32);
 		startMenu.add(vars);
-		vars.setColumns(10);
 		
-		size.setBounds(width/2-100, 50, 100, 32);
+		size.setBounds(width/2+25, 50, 150, 32);
 		startMenu.add(size);
-		vars.setColumns(10);
 		
-		create.setBounds(width/2+50, 50, 200, 32);
-		startMenu.add(create);
+		startMenu.setVisible(false);
+		startMenu.setVisible(true);
 	}
 	
 	private void initialize(int variables, int setSize, int[][] v)
