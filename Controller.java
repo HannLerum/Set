@@ -571,21 +571,24 @@ public class Controller extends JFrame   implements MouseListener{
 	private boolean isASet(Card[] cards)
 	{
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+		/*int[]vs = new int[largestVariable+1];
+		for (int curVariable = 0; variable<numberOfVariables&&isASet; variable++)
+		{
+			for(int v = 0; v<cardsToASet; v++)
+			{
+				vs[variables[curVariable][v]]=0;
+			}
+			for (int card=0; card<cardsToASet; card++)
+			{
+				vs[cards[card].getVariable(curVariable)]++;
+			}
+			for(int i = 0; i<cardsToASet; i++)
+			{
+				if(vs[variables[curVariable][i]]>1 && vs[variables[curVariable][i]]<cardsToASet)
+					{isASet=false;}
+				
+			}
+		}*/
 		//System.out.println("we arrived");
 		if(!gameInitialized)
   			{throw new IllegalArgumentException("game has not been initialized");}
