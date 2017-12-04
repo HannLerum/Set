@@ -625,7 +625,7 @@ public class Card {
 	  }
 	  else //shape is not a variable
 	  {
-		  g.fillRoundRect(x+10, y+10, width-20, height-20, 10, 10);//fill card with color
+		  g.fillRoundRect(x+width/10, y+height/10, width-width/10*2, height-height/10*2, 10, 10);//fill card with color
 		  
 	  }
 	  if(variables.length>NUMBER)
