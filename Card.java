@@ -802,7 +802,7 @@ public class Card {
 	  {
 		  color = "purple";
 	  }
-	  else //it is not any of the defined colors (I don't expect this to happen)
+	  else //it is not any of the above defined colors
 	  {
 		  color = ("color "+variables[COLOR]);
 	  }
@@ -815,28 +815,62 @@ public class Card {
 			{
 				shape = "square";
 			}
-			if(variables[SHAPE]==CIRCLE)
+			else if(variables[SHAPE]==CIRCLE)
 			{
 				shape = "circle";
 			}
-			if(variables[SHAPE]==TRIANGLE)
+			else if(variables[SHAPE]==TRIANGLE)
 			{
 				shape = "triangle";
 			}
+			else if(variables[SHAPE]==MOUNTAINS)
+			{
+				shape = "mountain range";
+			}
+			else if(variables[SHAPE]==BOWTIE)
+			{
+				shape = "bowtie";
+			}
+			else if(variables[SHAPE]==HOURGLASS)
+			{
+				shape = "hourglass";
+			}
+
+			else if(variables[SHAPE]==DIAMOND)
+			{
+				shape = "diamond";
+			}
+			else //not one of the above defined shapes
+			{
+				shape =("shape "+variables[SHAPE]);
+			}
 			
+			  //fill
 			if(variables.length>FILL)
 			{
 				if(variables[FILL]==OUTLINE)
 				{
-					fill = "outline";
+					fill = "outlined";
 				}
-				if(variables[FILL]==STRIPED)
+				else if(variables[FILL]==STRIPED)
 				{
 					fill = "striped";
 				}
-				if(variables[FILL]==SOLID)
+				else if(variables[FILL]==SOLID)
 				{
 					fill = "solid";
+				}
+				else if(variables[FILL]==GRADIENT)
+				{
+					fill = "gradient";
+				}
+				else if(variables[FILL]==THICK_OUTLINE)
+				{
+					fill = "thickly outlined";
+				}
+				else //not one of the above defined fills
+				{
+					fill = ("fill "+variables[FILL]);
 				}
 				
 				s = (number + " "+color+" "+fill+" "+shape+(number>1?"s":""));
