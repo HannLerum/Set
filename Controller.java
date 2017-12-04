@@ -309,25 +309,51 @@ public class Controller extends JFrame   implements MouseListener{
 							@Override
 							public void mouseClicked(MouseEvent e) 
 							{
-								largestVariable = 0;
-								//copy all the things to variables double array
-								for(int variable = 0; variable<numberOfVariables; variable++)
+								//check to make sure that no duplicates exist
+								boolean noDuplicates = true;
+								for(int variable = 0; variable<numberOfVariables && noDuplicates; variable++)
 								{
-									for(int card = 0; card<cardsToASet;card++)
+									for(int card = 0; card<cardsToASet && noDuplicates;card++)
 									{
-										int v = choices[variable][card].getSelectedIndex()+(variable==Card.NUMBER?1:0);//grab the value of the variable (increase by 1 if it's a number
-										variables[variable][card] = v;//put it in the variables array
-										if(v>largestVariable)//if this variable is bigger than the current biggest
+										for(int check = 0; check<card && noDuplicates; check++)
 										{
-											largestVariable = v;//it is now the current biggest.
+											if(choices[variable][card].getSelectedIndex()==(choices[variable][check].getSelectedIndex()))
+											{
+												noDuplicates = false;
+												//System.out.println("User attempted a duplicate in variable "+variable+" at options "+check+" and "+card+": "+choices[variable][card].getSelectedIndex());
+											}
 										}
-										System.out.print(v+" ");
 									}
-									System.out.println();
 								}
 								
-								initialize(numberOfVariables,cardsToASet,variables);
-								startMenu.dispose();
+								if(noDuplicates)
+								{
+									largestVariable = 0;
+									//copy all the things to variables double array
+									for(int variable = 0; variable<numberOfVariables; variable++)
+									{
+										for(int card = 0; card<cardsToASet;card++)
+										{
+											int v = choices[variable][card].getSelectedIndex()+(variable==Card.NUMBER?1:0);//grab the value of the variable (increase by 1 if it's a number
+											variables[variable][card] = v;//put it in the variables array
+											if(v>largestVariable)//if this variable is bigger than the current biggest
+											{
+												largestVariable = v;//it is now the current biggest.
+											}
+											System.out.print(v+" ");
+										}
+										System.out.println();
+									}
+									
+									initialize(numberOfVariables,cardsToASet,variables);
+									startMenu.dispose();
+								}
+								else//there is a duplicate
+								{
+									//scold the user. They cannot select the same variable twice. (cannot select light pink twice, cannot select 'solid' twice)
+									g.drawString("You cannot use duplicate values!", width/2-50, 200+cardsToASet*(h*2)+30);
+									//System.out.println("Bad user. No duplicates allowed.");
+								}
 							}
 						});
 						ready.setBounds(width/2-50,200+cardsToASet*(h*2)+50,100,40);
@@ -571,7 +597,7 @@ public class Controller extends JFrame   implements MouseListener{
 		for(int i = 0; i<numberOfVariables ; i++)//for each variable
 		{
 			//int[] v = new int[cardsToASet];
-			int[] v = new int[7]; // 7 is the numberOfShapes available, which is currently our variable with the most options
+			int[] v = new int[22]; // 7 is the numberOfShapes available, which is currently our variable with the most options
 			for(int k = 0 ; k<v.length ; k ++)
 			{
 				v[k] = 0;
