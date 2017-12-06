@@ -24,6 +24,8 @@ public class Controller extends JFrame   implements MouseListener{
 	private boolean debugging = false;
 	private boolean halfsize = true;
 	
+	private boolean messageUp = false;
+	
 	private boolean gameInitialized = false;
 	private int points;
 	int width;
@@ -62,7 +64,6 @@ public class Controller extends JFrame   implements MouseListener{
 
 	public static void main(String[] args) 
 	{
-		
         Controller myController = new Controller();
 	}
 	
@@ -98,7 +99,8 @@ public class Controller extends JFrame   implements MouseListener{
 			@Override
 			public void mouseClicked(MouseEvent e) 
 			{
-				double chance = Math.random()*100; //Math.random gives 0 to .9999
+				messageUp = true;
+				int chance = (int)(Math.random()*100); //Math.random gives 0 to .9999, so this will give 0 to 99
 				System.out.println(chance);
 				Font current = g.getFont();
 				Color currentColor = g.getColor();
@@ -108,12 +110,12 @@ public class Controller extends JFrame   implements MouseListener{
 				g.setColor(Color.magenta);
 				if(gameInitialized)
 				{
-					if(chance > 90)//10% chance
+					if(chance < 10) // 0-9 -- 10% chance
 					{
 						g.drawString("Please stop clicking", width/2-240 ,height/4+90);
 						g.drawString("the hint button", width/2-240 ,height/4+90+50);
 					}
-					else // 90% chance
+					else // 10-99 -- 90% chance
 					{
 						int howMany = howManySets(cardsOnTable,cardsToASet);
 						g.drawString( ("There "+(howMany==1?"is ":"are ")+howMany), width/2-240 ,height/4+90);
@@ -123,23 +125,27 @@ public class Controller extends JFrame   implements MouseListener{
 				}
 				else
 				{
-					if(chance > 60) // 40% chance
+					if(chance < 40) // 0-39 -- 40% chance
 					{
 						g.drawString("To start, click the", width/2-240 ,height/4+90);
 						g.drawString("\"New Game\" button.", width/2-240 ,height/4+90+50);
 					}
-					else if(chance > 20) //not greater than 60, greater than 20 -- 40% chance
+					else if(chance < 80) // 40-79 -- 40% chance
 					{
 						g.drawString("The \"New Game\"", width/2-240 ,height/4+65);
 						g.drawString("button is to the right", width/2-240 ,height/4+65+50);
 						g.drawString("of the hint button", width/2-240 ,height/4+65+100);
 					}
-					else // not greater than 20 -- 20% chance
+					else if(chance < 90)// 80-89 -- 10% chance
 					{
 						g.drawString("Please just", width/2-150 ,height/4+90);
 						g.drawString("start the game", width/2-170 ,height/4+90+50);
 					}
-					
+					else // 90-99 -- 10% chance
+					{
+						g.drawString("You need to", width/2-150 ,height/4+90);
+						g.drawString("start the game", width/2-170 ,height/4+90+50);
+					}
 				}
 				g.setFont(current);
 				g.setColor(currentColor);
@@ -213,25 +219,41 @@ public class Controller extends JFrame   implements MouseListener{
 		defaultDeck.addMouseListener(new MouseAdapter()
 		{
 			@Override
-			public void mouseClicked(MouseEvent e) 
+			public void mouseClicked(MouseEvent e)
 			{
 				//set to selected values
-				if(vars.getSelectedIndex()==0)
+				try
+				{
+					if(vars.getSelectedIndex()==0)
+					{
+						numberOfVariables = 4;
+					}
+					else
+					{
+						numberOfVariables = Integer.parseInt((String)vars.getSelectedItem());
+					}
+				}
+				catch(Exception bad)
 				{
 					numberOfVariables = 4;
 				}
-				else
+				
+				try
 				{
-					numberOfVariables = Integer.parseInt((String)vars.getSelectedItem());
+					if(size.getSelectedIndex()==0)
+					{
+						cardsToASet = 3;
+					}
+					else
+					{
+						cardsToASet = Integer.parseInt((String)size.getSelectedItem());
+					}
 				}
-				if(size.getSelectedIndex()==0)
+				catch(Exception bad)
 				{
 					cardsToASet = 3;
 				}
-				else
-				{
-					cardsToASet = Integer.parseInt((String)size.getSelectedItem());
-				}
+				
 				variables = new int[numberOfVariables][cardsToASet];
 				
 				for(int i = 0; i<numberOfVariables; i++)
@@ -241,6 +263,7 @@ public class Controller extends JFrame   implements MouseListener{
 						variables[i][j]= (i==Card.NUMBER?(j+1):(j)); //if this is the NUMBER variable, set this to j+1, else set this to j. That way all variables but NUMBER go from 0 to setSize-1 and NUMBER goes from 1 to setSize
 					}
 				}
+				largestVariable = cardsToASet;
 				initialize(numberOfVariables,cardsToASet,variables);
 				startMenu.dispose();
 			}
@@ -471,6 +494,7 @@ public class Controller extends JFrame   implements MouseListener{
 	
 	public void paint(Graphics g)
 	{
+		System.out.println("paint");
 		super.paint(g);
 		if(gameInitialized)
 		{
@@ -537,8 +561,6 @@ public class Controller extends JFrame   implements MouseListener{
 		{	
 			while(placeOnTable[current]<end)
 			{
-
-				
 				for(int x=0; x<test.length; x++)
 					{test[x] = new Card();
 					test[x] = tableCards[placeOnTable[x]];
@@ -548,13 +570,8 @@ public class Controller extends JFrame   implements MouseListener{
 				if (isASet(test))
 				{
 					numberOfSets++;
-					for (int i =0; i<3; i++)
-					{
-						System.out.println(placeOnTable[i]);
-					}
 				}
 				placeOnTable[current]++;
-
 			}
 
 			while ((placeOnTable[current]>=end-setSize+current)&&current>0)
@@ -573,9 +590,6 @@ public class Controller extends JFrame   implements MouseListener{
 	
 	private boolean isASet(Card[] cards)
 	{
-		
-
-
 		if(!gameInitialized)
   			{throw new IllegalArgumentException("game has not been initialized");}
 
@@ -595,7 +609,7 @@ public class Controller extends JFrame   implements MouseListener{
 			}
 		}
 		//if any variable appears at least twice but not on every card
-			int[]vs = new int[largestVariable+1];
+		int[]vs = new int[largestVariable+1];
 		for (int curVariable = 0; curVariable<numberOfVariables&&isASet; curVariable++)
 		{
 			for(int v = 0; v<cardsToASet; v++)
@@ -661,6 +675,7 @@ public class Controller extends JFrame   implements MouseListener{
 			}
 		}
 		c.select();
+		System.out.println("selected");
 		numberOfSelectedCards++;
 	}
 	private void deselect(Card c)
@@ -709,6 +724,12 @@ public class Controller extends JFrame   implements MouseListener{
 	}
 	
 	public void mousePressed(MouseEvent event) {
+		if(messageUp)
+		{
+			this.setVisible(false);
+			this.setVisible(true);
+			messageUp = false;
+		}
 		if(gameInitialized)
 		{
 			int xMousePosition = event.getX()-xMouseOffsetToContentPaneFromJFrame;
@@ -720,7 +741,7 @@ public class Controller extends JFrame   implements MouseListener{
 			//determine which card, if any, the user clicked on, and select or deselect it as applicable
 			cardClick(xMousePosition, yMousePosition);
 			
-			if(numberOfSelectedCards >= cardsToASet) //if the number of cards selected is the number of cards needed for a set.
+			if(numberOfSelectedCards >= cardsToASet) //if the number of cards selected is the number of cards needed for a set, or more.
 			{
 				checkSet();
 			}
@@ -760,7 +781,8 @@ public class Controller extends JFrame   implements MouseListener{
 					{
 						select(cardsOnTable[i]);
 					}
-					repaint();
+					this.setVisible(false);
+					this.setVisible(true);
 				}
 				counter++;
 			}
@@ -772,7 +794,7 @@ public class Controller extends JFrame   implements MouseListener{
 		Graphics g = this.getGraphics();
 		if(isASet(selectedCards))//if it is a set
 		{
-			
+			System.out.println("SET!");
 			//show the user that it is a set
 			Font current = g.getFont();
 			Color currentColor = g.getColor();
@@ -827,6 +849,7 @@ public class Controller extends JFrame   implements MouseListener{
 		}//end if
 		else //it is not a set
 		{
+			System.out.println("NO!");
 			//scold, maybe deduct points
 			Font current = g.getFont();
 			Color currentColor = g.getColor();
