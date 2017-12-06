@@ -196,7 +196,7 @@ public class Controller extends JFrame   implements MouseListener{
 				}
 				if(size.getSelectedIndex()==0)
 				{
-					cardsToASet = 4;
+					cardsToASet = 3;
 				}
 				else
 				{
@@ -234,7 +234,7 @@ public class Controller extends JFrame   implements MouseListener{
 				}
 				if(size.getSelectedIndex()==0)
 				{
-					cardsToASet = 4;
+					cardsToASet = 3;
 				}
 				else
 				{
