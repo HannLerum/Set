@@ -98,23 +98,51 @@ public class Controller extends JFrame   implements MouseListener{
 			@Override
 			public void mouseClicked(MouseEvent e) 
 			{
+				double chance = Math.random()*100; //Math.random gives 0 to .9999
+				System.out.println(chance);
+				Font current = g.getFont();
+				Color currentColor = g.getColor();
+				g.setColor(Color.white);
+				g.setFont(new Font(null, Font.CENTER_BASELINE, 50) );
+				g.fillRoundRect(width/2-250, height/4, 500, 200, 10, 10);
+				g.setColor(Color.magenta);
 				if(gameInitialized)
 				{
-					//TODO hint button -- Make this useful
-					System.out.println("you clicked the hint button.");
+					if(chance > 90)//10% chance
+					{
+						g.drawString("Please stop clicking", width/2-240 ,height/4+90);
+						g.drawString("the hint button", width/2-240 ,height/4+90+50);
+					}
+					else // 90% chance
+					{
+						int howMany = howManySets(cardsOnTable,cardsToASet);
+						g.drawString( ("There "+(howMany==1?"is ":"are ")+howMany), width/2-240 ,height/4+90);
+						g.drawString("set"+(howMany==1?" ":"s ")+" on the table.", width/2-240 ,height/4+90+50);
+					}
 					
-					Font current = g.getFont();
-					Color currentColor = g.getColor();
-					g.setColor(Color.white);
-					g.setFont(new Font(null, Font.CENTER_BASELINE, 50) );
-					g.fillRoundRect(width/2-120, height/4, 500, 150, 10, 10);
-					g.setColor(Color.magenta);
-					int howMany = howManySets(cardsOnTable,cardsToASet);
-					g.drawString( ("There "+(howMany==1?"is ":"are ")+howMany), width/2-100 ,height/4+65);
-					g.drawString("set"+(howMany==1?" ":"s ")+" on the table.", width/2-100 ,height/4+65+50);
-					g.setFont(current);
-					g.setColor(currentColor);
 				}
+				else
+				{
+					if(chance > 60) // 40% chance
+					{
+						g.drawString("To start, click the", width/2-240 ,height/4+90);
+						g.drawString("\"New Game\" button.", width/2-240 ,height/4+90+50);
+					}
+					else if(chance > 20) //not greater than 60, greater than 20 -- 40% chance
+					{
+						g.drawString("The \"New Game\"", width/2-240 ,height/4+65);
+						g.drawString("button is to the right", width/2-240 ,height/4+65+50);
+						g.drawString("of the hint button", width/2-240 ,height/4+65+100);
+					}
+					else // not greater than 20 -- 20% chance
+					{
+						g.drawString("Please just", width/2-150 ,height/4+90);
+						g.drawString("start the game", width/2-170 ,height/4+90+50);
+					}
+					
+				}
+				g.setFont(current);
+				g.setColor(currentColor);
 			}
 		});
 		
@@ -144,6 +172,8 @@ public class Controller extends JFrame   implements MouseListener{
 		start.setBounds(120, 10, 100, 30);
 		this.add(hint);
 		this.add(start);
+		this.setVisible(false);
+		this.setVisible(true);
 	}
 	
 	private void start()
@@ -209,9 +239,7 @@ public class Controller extends JFrame   implements MouseListener{
 					for(int j = 0; j<cardsToASet; j++)
 					{
 						variables[i][j]= (i==Card.NUMBER?(j+1):(j)); //if this is the NUMBER variable, set this to j+1, else set this to j. That way all variables but NUMBER go from 0 to setSize-1 and NUMBER goes from 1 to setSize
-						System.out.print(variables[i][j]+" ");
 					}
-					System.out.println();
 				}
 				initialize(numberOfVariables,cardsToASet,variables);
 				startMenu.dispose();
@@ -339,9 +367,7 @@ public class Controller extends JFrame   implements MouseListener{
 									{
 										largestVariable = v;//it is now the current biggest.
 									}
-									System.out.print(v+" ");
 								}
-								System.out.println();
 							}
 							
 							initialize(numberOfVariables,cardsToASet,variables);
@@ -423,7 +449,7 @@ public class Controller extends JFrame   implements MouseListener{
 		
 		//initialize deck and all arrays
 		myDeck = new Deck(numberOfVariables,cardsToASet,v);
-		//myDeck.shuffle();
+		myDeck.shuffle();
 		foundSets = new Card[myDeck.numberOfCards()];
 		selectedCards = new Card[cardsToASet];
 		cardsOnTable = new Card[rows*columns];
