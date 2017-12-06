@@ -530,49 +530,33 @@ public class Controller extends JFrame   implements MouseListener{
 		int current=setSize-1; //the spot in place on table that is getting incremented
 
 		int end=numberOfCardsOnTheTable; //this is just a convenient shortcut so that I do not have to write tablecards.length everytime
-		
+		//This populates the array with the starting location integers
 		for(int x =0; x<test.length; x++)
 				{placeOnTable[x]=x;}
 		while(placeOnTable[0]<=end-setSize+current)
 		{	
 			while(placeOnTable[current]<end)
 			{
-				
-//				for(int i=0; i<placeOnTable.length; i++)
-//				{
-//					System.out.println(placeOnTable[i]);
-//				}
+
 				
 				for(int x=0; x<test.length; x++)
 					{test[x] = new Card();
 					test[x] = tableCards[placeOnTable[x]];
-					//System.out.println(tablecards[placeOnTable[x]].toString());
-					//System.out.println(placeOnTable[x]);
-					//System.out.println(tableCards[x].toString());
-					//System.out.println(test[x].toString());
+
 					}
 				
 				if (isASet(test))
-					{numberOfSets++;
-					System.out.println("sets so far" + numberOfSets);
+				{
+					numberOfSets++;
 					for (int i =0; i<3; i++)
-						{
-							System.out.println(placeOnTable[i]);
-						}
-						}
+					{
+						System.out.println(placeOnTable[i]);
+					}
+				}
 				placeOnTable[current]++;
-				//System.out.println(" ");
-				
-				//System.out.println(" ");
+
 			}
-//			System.out.println("end");
-//			System.out.println(end);
-//			System.out.println("Current");
-//			System.out.println(current);
-//			System.out.println(" pl o cur");
-//			System.out.println(placeOnTable[current]);
-//			System.out.println(" end -");
-//			System.out.println(end-setSize+current);
+
 			while ((placeOnTable[current]>=end-setSize+current)&&current>0)
 			{
 				current--;
@@ -582,21 +566,19 @@ public class Controller extends JFrame   implements MouseListener{
 				{placeOnTable[x] = placeOnTable[x-1]+1;}
 			current = setSize-1;
 		}
-		System.out.println("num of s"+numberOfSets);
+
 		return numberOfSets;
 		
 	}
 	
 	private boolean isASet(Card[] cards)
 	{
-		//System.out.println("we arrived");
+		
+
+
 		if(!gameInitialized)
   			{throw new IllegalArgumentException("game has not been initialized");}
-		/*for(int i=0; i<cards.length; i++)
-			{
-			System.out.println(i);	
-			System.out.println(cards[i].toString());
-			}*/
+
 		boolean isASet = true;
 		//if the number of cards passed in is incorrect
 		if(cards.length!=cardsToASet)
@@ -613,7 +595,24 @@ public class Controller extends JFrame   implements MouseListener{
 			}
 		}
 		//if any variable appears at least twice but not on every card
-		for(int i = 0; i<numberOfVariables ; i++)//for each variable
+			int[]vs = new int[largestVariable+1];
+		for (int curVariable = 0; curVariable<numberOfVariables&&isASet; curVariable++)
+		{
+			for(int v = 0; v<cardsToASet; v++)
+			{
+				vs[variables[curVariable][v]]=0;
+			}
+			for (int card=0; card<cardsToASet; card++)
+			{
+				vs[cards[card].getVariable(curVariable)]++;
+			}
+			for(int i = 0; i<cardsToASet; i++)
+			{
+				if(vs[variables[curVariable][i]]>1 && vs[variables[curVariable][i]]<cardsToASet)
+					{isASet=false;}	
+			}
+		}
+		/*for(int i = 0; i<numberOfVariables ; i++)//for each variable
 		{
 			//int[] v = new int[cardsToASet];
 			int[] v = new int[22]; // 7 is the numberOfShapes available, which is currently our variable with the most options
@@ -633,12 +632,12 @@ public class Controller extends JFrame   implements MouseListener{
 					isASet = false;
 				}
 				
-				/* logically equivalent but a LITTLE messier
-				 * if( ! ((v[k]<2) || v[k]==cardsToASet) )
-				 * {
-				 * 		isASet = false;
-				 * }
-				 */
+				 logically equivalent but a LITTLE messier
+				 if( ! ((v[k]<2) || v[k]==cardsToASet) )
+				 {
+				 		isASet = false;
+				 }
+				 
 			}
 		}
 		if (isASet)
@@ -646,7 +645,7 @@ public class Controller extends JFrame   implements MouseListener{
 			{
 				System.out.println(cards[i].toString());
 			}
-		}
+		}*/
 		return isASet;
 	}
 	
@@ -964,3 +963,4 @@ public class Controller extends JFrame   implements MouseListener{
 		;
 	}
 }
+
