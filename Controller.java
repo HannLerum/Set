@@ -9,6 +9,7 @@ import java.awt.Stroke;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.TimerTask;
 import java.awt.event.MouseAdapter;
 
 import javax.swing.JButton;
@@ -31,6 +32,8 @@ public class Controller extends JFrame   implements MouseListener{
 	int width;
 	int height;
 	
+	private java.util.Timer gameTimer = new java.util.Timer();
+	private java.util.TimerTask myTimerTask;
     private Container gameContentPane;
     private boolean gameIsReady = false;
     private Deck myDeck;
@@ -87,6 +90,21 @@ public class Controller extends JFrame   implements MouseListener{
         xMouseOffsetToContentPaneFromJFrame = borderWidth;
         yMouseOffsetToContentPaneFromJFrame = height - gameContentPane.getHeight()-borderWidth; // assume side border = bottom border; ignore title bar
 
+        myTimerTask = new TimerTask() {
+    		@Override
+    		public void run() {
+    			if(gameInitialized)
+    			{
+    				if(numberOfSelectedCards >= cardsToASet) //if the number of cards selected is the number of cards needed for a set, or more.
+    				{
+    					checkSet();
+    					try { Thread.sleep(200);}catch (Exception e){System.out.println("error: could not pause");}
+    					repaint();
+    				}
+    			}
+    		}
+    	};
+    	
      // register this class as a mouse event listener for the JFrame
         this.addMouseListener(this);
         
@@ -490,6 +508,7 @@ public class Controller extends JFrame   implements MouseListener{
         //make sure that there is at least one set on the table (as well as the minimum number of cards, but that has been satisfied above)
         dealTilFull();
         repaint();
+        gameTimer.schedule(myTimerTask, 0, 100); //start the timer, have it execute once every 100 milliseconds
 	}
 	
 	public void paint(Graphics g)
@@ -740,11 +759,6 @@ public class Controller extends JFrame   implements MouseListener{
 			
 			//determine which card, if any, the user clicked on, and select or deselect it as applicable
 			cardClick(xMousePosition, yMousePosition);
-			
-			if(numberOfSelectedCards >= cardsToASet) //if the number of cards selected is the number of cards needed for a set, or more.
-			{
-				checkSet();
-			}
 		}
 	}//end mouse event
 	
@@ -803,7 +817,7 @@ public class Controller extends JFrame   implements MouseListener{
 			g.fillRoundRect(width/2, height/2, 90, 90, 10, 10);
 			g.setColor(Color.blue);
 			g.drawString(":)", width/2+15 ,height/2+65);
-			try { Thread.sleep(1500);}catch (Exception e){;}
+			try { Thread.sleep(1500);}catch (Exception e){System.out.println("error: could not pause");}
 			g.setFont(current);
 			g.setColor(currentColor);
 			//give points
@@ -961,12 +975,15 @@ public class Controller extends JFrame   implements MouseListener{
 		if(win)
 		{
 			//TODO "you win!"
+			System.out.println("You Win!!");
 		}
 		else
 		{
-			//TODO "you lose. :("
+			//TODO "you lose. :(" highscore?
+			System.out.println("No sets remain.");
 		}
 		
+		//TODO ask if they wanna play again
 		gameInitialized = false;
 	}
 	
