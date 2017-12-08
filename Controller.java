@@ -470,7 +470,7 @@ public class Controller extends JFrame   implements MouseListener{
 		
 		//initialize deck and all arrays
 		myDeck = new Deck(numberOfVariables,cardsToASet,v);
-		//myDeck.shuffle();
+		myDeck.shuffle();
 		foundSets = new Card[myDeck.numberOfCards()];
 		selectedCards = new Card[cardsToASet];
 		cardsOnTable = new Card[rows*columns];
@@ -553,7 +553,7 @@ public class Controller extends JFrame   implements MouseListener{
 		int numberOfSets = 0;
 		int current=setSize-1; //the spot in place on table that is getting incremented
 
-		int end=numberOfCardsOnTheTable; //this is just a convenient shortcut so that I do not have to write tablecards.length everytime
+		int end=tableCards.length; //this is just a convenient shortcut so that I do not have to write tablecards.length everytime
 		//This populates the array with the starting location integers
 		for(int x =0; x<test.length; x++)
 				{placeOnTable[x]=x;}
@@ -583,10 +583,8 @@ public class Controller extends JFrame   implements MouseListener{
 				{placeOnTable[x] = placeOnTable[x-1]+1;}
 			current = setSize-1;
 		}
-
-		System.out.println("there are "+numberOfSets+" sets on the table.");
-		return numberOfSets;
 		
+		return numberOfSets;
 	}
 	
 	private boolean isASet(Card[] cards)
@@ -599,6 +597,7 @@ public class Controller extends JFrame   implements MouseListener{
 		if(cards.length!=cardsToASet)
 		{
 			isASet = false;
+			return isASet;
 		}
 		//if the array of cards is not full
 		for( int i  = 0; i < cards.length; i++)
@@ -627,6 +626,7 @@ public class Controller extends JFrame   implements MouseListener{
 					{isASet=false;}	
 			}
 		}
+		
 		/*for(int i = 0; i<numberOfVariables ; i++)//for each variable
 		{
 			//int[] v = new int[cardsToASet];
@@ -966,8 +966,8 @@ public class Controller extends JFrame   implements MouseListener{
 		{
 			//TODO "you lose. :(" highscore?
 			g.setColor(Color.red);
-			g.drawString("No sets remain", width/2-240 ,height/4+65);
-			g.drawString("on the table. :(", width/2-240 ,height/4+65+50);
+			g.drawString("No sets remain :(", width/2-240 ,height/4+65+25);
+			g.drawString("Your score: "+points, width/2-240 ,height/4+65+75);
 			System.out.println("No sets remain.");
 		}
 		
