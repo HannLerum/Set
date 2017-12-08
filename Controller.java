@@ -28,6 +28,7 @@ public class Controller extends JFrame   implements MouseListener{
 	private boolean messageUp = false;
 	
 	private boolean gameInitialized = false;
+	private boolean gameOver = false;
 	private int points;
 	int width;
 	int height;
@@ -89,7 +90,7 @@ public class Controller extends JFrame   implements MouseListener{
         int borderWidth = (width - gameContentPane.getWidth())/2;  // 2 since border on either side
         xMouseOffsetToContentPaneFromJFrame = borderWidth;
         yMouseOffsetToContentPaneFromJFrame = height - gameContentPane.getHeight()-borderWidth; // assume side border = bottom border; ignore title bar
-
+        
         myTimerTask = new TimerTask() {
     		@Override
     		public void run() {
@@ -101,15 +102,21 @@ public class Controller extends JFrame   implements MouseListener{
     					try { Thread.sleep(200);}catch (Exception e){System.out.println("error: could not pause");}
     					repaint();
     				}
+    				if(gameOver)
+    				{
+    					gameOver();
+    					gameOver = false;
+    				}
     			}
     		}
     	};
+    	gameTimer.schedule(myTimerTask, 0, 100); //start the timer, have it execute once every 100 milliseconds
     	
      // register this class as a mouse event listener for the JFrame
         this.addMouseListener(this);
         
         Graphics g = this.getGraphics();
-        
+		
         // "Hint" button
 		JButton hint = new JButton("Hint");
 		hint.addMouseListener(new MouseAdapter()
@@ -121,9 +128,9 @@ public class Controller extends JFrame   implements MouseListener{
 				int chance = (int)(Math.random()*100); //Math.random gives 0 to .9999, so this will give 0 to 99
 				System.out.println(chance);
 				Font current = g.getFont();
+				g.setFont(new Font(null, Font.CENTER_BASELINE, 50) );
 				Color currentColor = g.getColor();
 				g.setColor(Color.white);
-				g.setFont(new Font(null, Font.CENTER_BASELINE, 50) );
 				g.fillRoundRect(width/2-250, height/4, 500, 200, 10, 10);
 				g.setColor(Color.magenta);
 				if(gameInitialized)
@@ -241,36 +248,13 @@ public class Controller extends JFrame   implements MouseListener{
 			{
 				//set to selected values
 				try
-				{
-					if(vars.getSelectedIndex()==0)
-					{
-						numberOfVariables = 4;
-					}
-					else
-					{
-						numberOfVariables = Integer.parseInt((String)vars.getSelectedItem());
-					}
-				}
+				{numberOfVariables = (vars.getSelectedIndex()==0?4:Integer.parseInt((String)vars.getSelectedItem()));}
 				catch(Exception bad)
-				{
-					numberOfVariables = 4;
-				}
-				
+				{numberOfVariables = 4;}
 				try
-				{
-					if(size.getSelectedIndex()==0)
-					{
-						cardsToASet = 3;
-					}
-					else
-					{
-						cardsToASet = Integer.parseInt((String)size.getSelectedItem());
-					}
-				}
+				{cardsToASet = (size.getSelectedIndex()==0?3:Integer.parseInt((String)size.getSelectedItem()));}
 				catch(Exception bad)
-				{
-					cardsToASet = 3;
-				}
+				{cardsToASet = 3;}
 				
 				variables = new int[numberOfVariables][cardsToASet];
 				
@@ -293,22 +277,15 @@ public class Controller extends JFrame   implements MouseListener{
 			public void mouseClicked(MouseEvent e) 
 			{
 				//set to selected values
-				if(vars.getSelectedIndex()==0)
-				{
-					numberOfVariables = 4;
-				}
-				else
-				{
-					numberOfVariables = Integer.parseInt((String)vars.getSelectedItem());
-				}
-				if(size.getSelectedIndex()==0)
-				{
-					cardsToASet = 3;
-				}
-				else
-				{
-					cardsToASet = Integer.parseInt((String)size.getSelectedItem());
-				}
+				try
+				{numberOfVariables = (vars.getSelectedIndex()==0?4:Integer.parseInt((String)vars.getSelectedItem()));}
+				catch(Exception bad)
+				{numberOfVariables = 4;}
+				try
+				{cardsToASet = (size.getSelectedIndex()==0?3:Integer.parseInt((String)size.getSelectedItem()));}
+				catch(Exception bad)
+				{cardsToASet = 3;}
+				
 				variables = new int[numberOfVariables][cardsToASet];
 				
 				int w = 30;
@@ -362,13 +339,15 @@ public class Controller extends JFrame   implements MouseListener{
 								choices[variable][card].addItem(new BorderIcon(w,h,Card.colors[border]));
 							}
 						}
-						
+						if(choices[variable][card].getItemCount()==cardsToASet)// if there are exactly as many options as cards (and therefore making a selection is pointless)
+						{
+							choices[variable][card].setEnabled(false);
+						}
 						choices[variable][card].setSelectedIndex(card);//have each JComboBox for this variable select a different value by default.
 						choices[variable][card].setBounds(width/2-(numberOfVariables*(w+80)/2)+variable*(w+80), 200+card*(h*2), w+40, h+10);
 						startMenu.add(choices[variable][card]);
 					}//end for
 				}//end for
-				g.drawString("Please select your variables.", width/2-200, 150);
 				
 				JButton ready = new JButton("Ready");
 
@@ -446,6 +425,7 @@ public class Controller extends JFrame   implements MouseListener{
 	
 	private void initialize(int variables, int setSize, int[][] v)
 	{
+		gameOver = false;
 		points = 0;
 		numberOfCardsOnTheTable = 0;
 		numberOfSelectedCards = 0;
@@ -490,7 +470,7 @@ public class Controller extends JFrame   implements MouseListener{
 		
 		//initialize deck and all arrays
 		myDeck = new Deck(numberOfVariables,cardsToASet,v);
-		myDeck.shuffle();
+		//myDeck.shuffle();
 		foundSets = new Card[myDeck.numberOfCards()];
 		selectedCards = new Card[cardsToASet];
 		cardsOnTable = new Card[rows*columns];
@@ -508,16 +488,16 @@ public class Controller extends JFrame   implements MouseListener{
         //make sure that there is at least one set on the table (as well as the minimum number of cards, but that has been satisfied above)
         dealTilFull();
         repaint();
-        gameTimer.schedule(myTimerTask, 0, 100); //start the timer, have it execute once every 100 milliseconds
 	}
 	
 	public void paint(Graphics g)
 	{
-		System.out.println("paint");
+		Font current = g.getFont();
+		g.setFont(new Font(null, Font.CENTER_BASELINE, 20) );
 		super.paint(g);
 		if(gameInitialized)
 		{
-			g.drawString("Sets found: "+points, 250, 60);
+			g.drawString("Sets found: "+points, 250, 65);
 			
 			//paint all cards on the table
 			int counter = 0;
@@ -558,6 +538,7 @@ public class Controller extends JFrame   implements MouseListener{
 	        	}
 	        }
 		}
+		g.setFont(current);
 	}
 	
 	private int howManySets(Card[] tableCards, int setSize)
@@ -603,6 +584,7 @@ public class Controller extends JFrame   implements MouseListener{
 			current = setSize-1;
 		}
 
+		System.out.println("there are "+numberOfSets+" sets on the table.");
 		return numberOfSets;
 		
 	}
@@ -694,7 +676,6 @@ public class Controller extends JFrame   implements MouseListener{
 			}
 		}
 		c.select();
-		System.out.println("selected");
 		numberOfSelectedCards++;
 	}
 	private void deselect(Card c)
@@ -895,7 +876,6 @@ public class Controller extends JFrame   implements MouseListener{
 	 */
 	private void dealTilFull()
 	{
-		boolean gameOver = false;
 		boolean dealing = true;
 		while(dealing)
 		{
@@ -951,15 +931,18 @@ public class Controller extends JFrame   implements MouseListener{
 				}
 			}//end else
 		}//end while
-		
-		if(gameOver)
-		{
-			gameOver();
-		}
 	}
 	
 	private void gameOver()
 	{
+		Graphics g = this.getGraphics();
+		
+		Font current = g.getFont();
+		g.setFont(new Font(null, Font.CENTER_BASELINE, 50) );
+		Color currentColor = g.getColor();
+		g.setColor(Color.white);
+		g.fillRoundRect(width/2-250, height/4, 500, 200, 10, 10);
+		
 		//TODO game over. There are no sets on the table, nor are there cards left in the deck. 
 		//You'll want to do different things based on whether or not there are any cards on the table still. (The latter is definitely a win, the former not so much)
 		
@@ -975,14 +958,22 @@ public class Controller extends JFrame   implements MouseListener{
 		if(win)
 		{
 			//TODO "you win!"
+			g.setColor(Color.blue);
+			g.drawString("You win!", width/2-240 ,height/4+65+50);
 			System.out.println("You Win!!");
 		}
 		else
 		{
 			//TODO "you lose. :(" highscore?
+			g.setColor(Color.red);
+			g.drawString("No sets remain", width/2-240 ,height/4+65);
+			g.drawString("on the table. :(", width/2-240 ,height/4+65+50);
 			System.out.println("No sets remain.");
 		}
 		
+		try { Thread.sleep(2000);}catch (Exception e){System.out.println("error: could not pause");}
+		g.setColor(currentColor);
+		g.setFont(current);
 		//TODO ask if they wanna play again
 		gameInitialized = false;
 	}
