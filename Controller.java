@@ -397,7 +397,7 @@ public class Controller extends JFrame   implements MouseListener{
 						{
 							//scold the user. They cannot select the same variable twice. (cannot select light pink twice, cannot select 'solid' twice)
 							g.drawString("You cannot use duplicate values!", width/2-50, 200+cardsToASet*(h*2)+30);
-							//System.out.println("Bad user. No duplicates allowed.");
+							System.out.println("Bad user. No duplicates allowed.");
 						}
 					}
 				});
@@ -425,6 +425,7 @@ public class Controller extends JFrame   implements MouseListener{
 	
 	private void initialize(int variables, int setSize, int[][] v)
 	{
+		System.out.println("initializing");
 		gameOver = false;
 		points = 0;
 		numberOfCardsOnTheTable = 0;
@@ -442,6 +443,10 @@ public class Controller extends JFrame   implements MouseListener{
 		int border_proportion = 5; //this determines the space between cards based on the width of the cards. The higher the number, the smaller the distance.
 		//TODO choose rows and columns based on the size of the deck. (rows*columns MUST be greater than the maximum number of cards that can be on the table w/out a set)
 		int min = 20; // TODO this is the variable that needs to be modified based on the deck size.
+		if(variables+setSize >= 9)
+		{
+			min = 50;
+		}
 		int cols = 0;
 		columns = 0;
 		
@@ -484,10 +489,11 @@ public class Controller extends JFrame   implements MouseListener{
         }
         
         gameInitialized = true;
-        
+        System.out.println("initialized.");
         //make sure that there is at least one set on the table (as well as the minimum number of cards, but that has been satisfied above)
         dealTilFull();
         repaint();
+        System.out.println("initialized.");
 	}
 	
 	public void paint(Graphics g)
@@ -710,6 +716,7 @@ public class Controller extends JFrame   implements MouseListener{
 			numberOfCardsOnTheTable++;
 			if(!added)//room wasn't found
 			{
+				System.out.println("not enough room");
 				//clear the table
 				for(int c=0; c<cardsOnTable.length; c++)
 				{
